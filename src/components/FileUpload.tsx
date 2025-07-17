@@ -221,7 +221,7 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
                 </li>
                 <li className="flex gap-2">
                   <Badge variant="outline" className="w-5 h-5 p-0 flex items-center justify-center text-xs">2</Badge>
-                  Click "Export data" and confirm
+                  Click "Export data\" and confirm
                 </li>
                 <li className="flex gap-2">
                   <Badge variant="outline" className="w-5 h-5 p-0 flex items-center justify-center text-xs">3</Badge>
