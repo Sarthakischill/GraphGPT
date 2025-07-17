@@ -2,10 +2,11 @@
 
 import { useMemo } from 'react'
 import { ConversationGraph } from '@/types'
-import { BarChart3, TrendingUp, MessageSquare, Calendar, Hash, Users, Activity } from 'lucide-react'
+import { BarChart3, TrendingUp, MessageSquare, Calendar, Hash, Users, Activity, Brain, Zap, Network } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
 import { Progress } from './ui/progress'
+import { motion } from 'motion/react'
 
 interface InsightsDashboardProps {
   graph: ConversationGraph
@@ -28,6 +29,12 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
     const clusterSizes = graph.clusters.map(cluster => cluster.size)
     const avgClusterSize = clusterSizes.length > 0 ? Math.round(clusterSizes.reduce((sum, size) => sum + size, 0) / clusterSizes.length) : 0
 
+    // Sentiment analysis
+    const sentimentCounts = { positive: 0, neutral: 0, negative: 0 }
+    conversations.forEach(conv => {
+      sentimentCounts[conv.metadata.sentiment]++
+    })
+
     return {
       totalConversations,
       totalMessages,
@@ -36,66 +43,295 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
       avgWordsPerConv: Math.round(totalWords / totalConversations),
       topTopics,
       avgClusterSize,
-      totalClusters: graph.clusters.length
+      totalClusters: graph.clusters.length,
+      sentimentCounts,
+      totalConnections: graph.edges.length
     }
   }, [graph])
 
   if (!insights) {
-    return <div className="p-6 text-center text-muted-foreground">No data to display insights.</div>
+    return (
+      <div className="p-6 text-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="space-y-4"
+        >
+          <Brain className="w-16 h-16 text-muted-foreground mx-auto" />
+          <p className="text-muted-foreground text-lg">No data to display insights.</p>
+        </motion.div>
+      </div>
+    )
   }
 
   return (
-    <div className="p-4 md:p-8 overflow-y-auto h-full">
-      <div className="max-w-6xl mx-auto space-y-8">
-        <header>
-          <h2 className="text-3xl font-bold flex items-center gap-3">
-            <BarChart3 className="w-8 h-8 text-primary" />
-            Conversation Insights
-          </h2>
-          <p className="text-muted-foreground mt-2">A high-level overview of your conversation landscape.</p>
-        </header>
+    <div className="p-6 md:p-8 overflow-y-auto h-full bg-gradient-to-br from-background/50 to-background">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header */}
+        <motion.header
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-center space-y-4"
+        >
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass">
+            <BarChart3 className="w-6 h-6 text-primary" />
+            <h2 className="text-2xl md:text-3xl font-bold">Neural Insights</h2>
+          </div>
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Deep analysis of your conversation patterns and knowledge landscape
+          </p>
+        </motion.header>
 
+        {/* Key Metrics */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card><CardHeader><CardTitle className="flex items-center gap-2 text-base"><MessageSquare className="w-5 h-5" />Total Conversations</CardTitle></CardHeader><CardContent><p className="text-3xl font-bold">{insights.totalConversations}</p></CardContent></Card>
-          <Card><CardHeader><CardTitle className="flex items-center gap-2 text-base"><Hash className="w-5 h-5" />Total Messages</CardTitle><CardDescription>Avg {insights.avgMessagesPerConv} per conversation</CardDescription></CardHeader><CardContent><p className="text-3xl font-bold">{insights.totalMessages.toLocaleString()}</p></CardContent></Card>
-          <Card><CardHeader><CardTitle className="flex items-center gap-2 text-base"><TrendingUp className="w-5 h-5" />Total Words</CardTitle><CardDescription>Avg {insights.avgWordsPerConv} per conversation</CardDescription></CardHeader><CardContent><p className="text-3xl font-bold">{insights.totalWords.toLocaleString()}</p></CardContent></Card>
-          <Card><CardHeader><CardTitle className="flex items-center gap-2 text-base"><Users className="w-5 h-5" />Identified Clusters</CardTitle><CardDescription>Avg {insights.avgClusterSize} conversations each</CardDescription></CardHeader><CardContent><p className="text-3xl font-bold">{insights.totalClusters}</p></CardContent></Card>
+          {[
+            {
+              icon: MessageSquare,
+              title: "Total Conversations",
+              value: insights.totalConversations,
+              subtitle: "Knowledge sessions",
+              color: "text-blue-500",
+              bgColor: "bg-blue-500/10",
+              delay: 0.1
+            },
+            {
+              icon: Hash,
+              title: "Total Messages",
+              value: insights.totalMessages.toLocaleString(),
+              subtitle: `Avg ${insights.avgMessagesPerConv} per conversation`,
+              color: "text-green-500",
+              bgColor: "bg-green-500/10",
+              delay: 0.2
+            },
+            {
+              icon: TrendingUp,
+              title: "Total Words",
+              value: insights.totalWords.toLocaleString(),
+              subtitle: `Avg ${insights.avgWordsPerConv} per conversation`,
+              color: "text-purple-500",
+              bgColor: "bg-purple-500/10",
+              delay: 0.3
+            },
+            {
+              icon: Network,
+              title: "Neural Connections",
+              value: insights.totalConnections,
+              subtitle: `${insights.totalClusters} identified clusters`,
+              color: "text-orange-500",
+              bgColor: "bg-orange-500/10",
+              delay: 0.4
+            }
+          ].map((metric, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: metric.delay }}
+            >
+              <Card className="glass card-hover">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <div className={`p-2 rounded-lg ${metric.bgColor}`}>
+                      <metric.icon className={`w-5 h-5 ${metric.color}`} />
+                    </div>
+                    <Badge variant="secondary" className="glass">
+                      Active
+                    </Badge>
+                  </div>
+                  <CardTitle className="text-base font-medium text-muted-foreground">
+                    {metric.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="text-3xl font-bold mb-1">{metric.value}</div>
+                  <p className="text-sm text-muted-foreground">{metric.subtitle}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </div>
 
+        {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card className="lg:col-span-1">
-            <CardHeader><CardTitle>Most Discussed Topics</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              {insights.topTopics.map(([topic, count]) => (
-                <div key={topic}>
-                  <div className="flex justify-between mb-1 text-sm">
-                    <span className="font-medium capitalize">{topic}</span>
-                    <span className="text-muted-foreground">{count} conversations</span>
+          {/* Topic Analysis */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <Card className="glass h-full">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Brain className="w-5 h-5 text-primary" />
                   </div>
-                  <Progress value={(count / insights.totalConversations) * 100} />
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+                  Knowledge Domains
+                </CardTitle>
+                <CardDescription>
+                  Most discussed topics in your conversations
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {insights.topTopics.length > 0 ? (
+                  insights.topTopics.map(([topic, count], index) => (
+                    <motion.div
+                      key={topic}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.6 + index * 0.1 }}
+                      className="space-y-2"
+                    >
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-primary/60" />
+                          <span className="font-medium capitalize">{topic}</span>
+                        </div>
+                        <Badge variant="outline" className="glass">
+                          {count} conversations
+                        </Badge>
+                      </div>
+                      <Progress 
+                        value={(count / insights.totalConversations) * 100} 
+                        className="h-2"
+                      />
+                    </motion.div>
+                  ))
+                ) : (
+                  <p className="text-muted-foreground text-center py-8">
+                    No topics identified yet
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          </motion.div>
 
-          {graph.clusters.length > 0 && (
-            <Card className="lg:col-span-1">
-              <CardHeader><CardTitle>Conversation Clusters</CardTitle></CardHeader>
-              <CardContent className="space-y-3">
-                {graph.clusters.map(cluster => (
-                  <div key={cluster.id} className="flex items-center gap-4 p-3 bg-secondary rounded-lg">
-                    <div className="w-4 h-4 rounded-full flex-shrink-0" style={{ backgroundColor: cluster.color }} />
-                    <div className="flex-1">
-                      <h4 className="font-medium">{cluster.name}</h4>
-                      <p className="text-sm text-muted-foreground">{cluster.description}</p>
-                    </div>
-                    <Badge variant="outline">{cluster.size}</Badge>
+          {/* Sentiment Analysis */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <Card className="glass h-full">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Activity className="w-5 h-5 text-primary" />
                   </div>
+                  Conversation Sentiment
+                </CardTitle>
+                <CardDescription>
+                  Emotional tone analysis of your discussions
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {[
+                  { 
+                    label: 'Positive', 
+                    count: insights.sentimentCounts.positive, 
+                    color: 'bg-green-500',
+                    bgColor: 'bg-green-500/10',
+                    textColor: 'text-green-500'
+                  },
+                  { 
+                    label: 'Neutral', 
+                    count: insights.sentimentCounts.neutral, 
+                    color: 'bg-blue-500',
+                    bgColor: 'bg-blue-500/10',
+                    textColor: 'text-blue-500'
+                  },
+                  { 
+                    label: 'Negative', 
+                    count: insights.sentimentCounts.negative, 
+                    color: 'bg-red-500',
+                    bgColor: 'bg-red-500/10',
+                    textColor: 'text-red-500'
+                  }
+                ].map((sentiment, index) => (
+                  <motion.div
+                    key={sentiment.label}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 + index * 0.1 }}
+                    className={`p-4 rounded-lg ${sentiment.bgColor} border border-current/20`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className={`font-medium ${sentiment.textColor}`}>
+                        {sentiment.label}
+                      </span>
+                      <Badge variant="secondary" className="glass">
+                        {sentiment.count}
+                      </Badge>
+                    </div>
+                    <Progress 
+                      value={(sentiment.count / insights.totalConversations) * 100}
+                      className="h-2"
+                    />
+                    <p className="text-sm text-muted-foreground mt-2">
+                      {((sentiment.count / insights.totalConversations) * 100).toFixed(1)}% of conversations
+                    </p>
+                  </motion.div>
                 ))}
               </CardContent>
             </Card>
-          )}
+          </motion.div>
         </div>
+
+        {/* Cluster Analysis */}
+        {graph.clusters.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+          >
+            <Card className="glass">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Users className="w-5 h-5 text-primary" />
+                  </div>
+                  Neural Clusters
+                </CardTitle>
+                <CardDescription>
+                  Identified conversation groups and their characteristics
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {graph.clusters.map((cluster, index) => (
+                    <motion.div
+                      key={cluster.id}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.9 + index * 0.1 }}
+                      className="p-4 rounded-lg glass border border-border/50 card-hover"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <div 
+                          className="w-4 h-4 rounded-full flex-shrink-0" 
+                          style={{ backgroundColor: cluster.color }}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium truncate">{cluster.name}</h4>
+                          <p className="text-sm text-muted-foreground truncate">
+                            {cluster.description}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Badge variant="outline" className="glass">
+                          {cluster.size} conversations
+                        </Badge>
+                        <div className="text-xs text-muted-foreground">
+                          Cluster #{index + 1}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
       </div>
     </div>
   )

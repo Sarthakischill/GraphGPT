@@ -4,10 +4,11 @@ import { useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import { FileUpload } from '@/components/FileUpload';
 import { GraphDataContext } from '@/context/GraphDataContext';
-import { Loader2, ArrowRight, Zap } from 'lucide-react';
+import { Loader2, ArrowRight, Zap, BrainCircuit, Network, Eye, Upload, Sparkles } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
-import { HeroHighlight, Highlight } from '@/components/ui/hero-highlight';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { motion } from 'motion/react';
 
 export default function HomePage() {
@@ -22,13 +23,12 @@ export default function HomePage() {
   };
 
   const handleTryDemo = () => {
-    // Create demo data that matches ChatGPT export format
     const demoData = {
       conversations: [
         {
           id: "demo-1",
           title: "JavaScript Best Practices",
-          create_time: Date.now() / 1000 - 86400, // 1 day ago
+          create_time: Date.now() / 1000 - 86400,
           update_time: Date.now() / 1000 - 86400,
           current_node: "node-2",
           moderation_results: [],
@@ -66,7 +66,7 @@ export default function HomePage() {
         {
           id: "demo-2",
           title: "React Hooks Explained",
-          create_time: Date.now() / 1000 - 172800, // 2 days ago
+          create_time: Date.now() / 1000 - 172800,
           update_time: Date.now() / 1000 - 172800,
           current_node: "node-4",
           moderation_results: [],
@@ -104,7 +104,7 @@ export default function HomePage() {
         {
           id: "demo-3",
           title: "CSS Grid vs Flexbox",
-          create_time: Date.now() / 1000 - 259200, // 3 days ago
+          create_time: Date.now() / 1000 - 259200,
           update_time: Date.now() / 1000 - 259200,
           current_node: "node-6",
           moderation_results: [],
@@ -149,63 +149,203 @@ export default function HomePage() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-md space-y-6 text-center">
-          <div className="flex items-center justify-center gap-2 text-xl font-medium text-primary">
-            <Loader2 className="w-8 h-8 animate-spin" />
-            Processing Your Universe of Ideas...
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-background/95">
+        <div className="w-full max-w-md space-y-8 text-center">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="flex items-center justify-center"
+          >
+            <div className="relative">
+              <BrainCircuit className="w-16 h-16 text-primary pulse-glow" />
+              <div className="absolute inset-0 w-16 h-16 border-2 border-primary/30 rounded-full animate-ping" />
+            </div>
+          </motion.div>
+          
+          <div className="space-y-4">
+            <h2 className="text-2xl font-bold gradient-text">
+              Processing Your Neural Universe
+            </h2>
+            {progress && (
+              <div className="space-y-3">
+                <Progress value={progress.progress} className="w-full h-2" />
+                <p className="text-muted-foreground text-sm">{progress.message}</p>
+                <Badge variant="secondary" className="glass">
+                  {Math.round(progress.progress)}% Complete
+                </Badge>
+              </div>
+            )}
           </div>
-          {progress && (
-            <>
-              <Progress value={progress.progress} className="w-full" />
-              <p className="text-muted-foreground">{progress.message}</p>
-            </>
-          )}
         </div>
-      </main>
+      </div>
     );
   }
 
   return (
-    <main className="min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background/95">
       {/* Hero Section */}
-      <HeroHighlight containerClassName="min-h-screen">
+      <div className="relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-primary rounded-full animate-pulse" />
+          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-primary/60 rounded-full animate-pulse delay-1000" />
+          <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-primary/40 rounded-full animate-pulse delay-2000" />
+          <div className="neural-line absolute top-1/2 left-0 w-full" />
+        </div>
+
+        <div className="relative z-10 container mx-auto px-4 py-20">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="text-center space-y-8 max-w-4xl mx-auto"
+          >
+            {/* Main Heading */}
+            <div className="space-y-4">
+              <Badge variant="secondary" className="glass px-4 py-2">
+                <Sparkles className="w-4 h-4 mr-2" />
+                AI-Powered Conversation Analysis
+              </Badge>
+              
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
+                Visualize Your
+                <span className="block gradient-text">ChatGPT History</span>
+                <span className="block text-muted-foreground text-2xl md:text-3xl lg:text-4xl font-normal mt-2">
+                  in 3D Neural Space
+                </span>
+              </h1>
+              
+              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                Transform your conversations into an interactive neural network. 
+                Discover patterns, explore connections, and visualize your intellectual journey.
+              </p>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
+              <Button 
+                onClick={handleTryDemo}
+                size="lg" 
+                className="btn-hover shadow-neural group px-8 py-6 text-lg"
+              >
+                <Zap className="w-5 h-5 mr-2 group-hover:animate-pulse" />
+                Try Interactive Demo
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                size="lg"
+                onClick={() => router.push('/upload')}
+                className="btn-hover glass px-8 py-6 text-lg"
+              >
+                <Upload className="w-5 h-5 mr-2" />
+                Upload Your Data
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      {/* Features Section */}
+      <div className="container mx-auto px-4 py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: [20, -5, 0] }}
-          transition={{ duration: 0.5, ease: [0.4, 0.0, 0.2, 1] }}
-          className="text-center space-y-4 max-w-xl mx-auto px-4"
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="text-center mb-16"
         >
-          <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-neutral-700 dark:text-white leading-tight">
-            Visualize Your<br/>
-            <Highlight className="text-black dark:text-white">
-              ChatGPT History
-            </Highlight><br/>
-            in 3D Space
-          </h1>
-          
-          <p className="text-sm md:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
-            Transform your conversations into an interactive neural network.
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Explore Your Mind Like Never Before
+          </h2>
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            Advanced AI-powered analysis reveals hidden patterns in your ChatGPT conversations
           </p>
-
-          <div className="flex flex-col sm:flex-row gap-3 justify-center items-center pt-4">
-            <Button 
-              onClick={handleTryDemo}
-              size="default" 
-              className="bg-primary hover:bg-primary/90"
-            >
-              Try Demo
-            </Button>
-            <Button 
-              variant="outline" 
-              size="default"
-              onClick={() => router.push('/upload')}
-            >
-              Upload Your Data
-            </Button>
-          </div>
         </motion.div>
-      </HeroHighlight>
-    </main>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          {[
+            {
+              icon: Network,
+              title: "3D Neural Network",
+              description: "See your conversations as interconnected nodes in beautiful 3D space",
+              details: "Each conversation becomes a node, with connections showing semantic similarity. Rotate, zoom, and explore your knowledge graph intuitively.",
+              delay: 0.1
+            },
+            {
+              icon: Eye,
+              title: "Smart Insights",
+              description: "Discover patterns and trends in your conversation history",
+              details: "AI-powered analysis reveals topic clusters, conversation evolution, and knowledge domains you explore most frequently.",
+              delay: 0.2
+            },
+            {
+              icon: Zap,
+              title: "Interactive Controls",
+              description: "Customize the visualization to focus on what matters to you",
+              details: "Adjust similarity thresholds, filter by date ranges, and customize the appearance to explore different perspectives.",
+              delay: 0.3
+            }
+          ].map((feature, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: feature.delay }}
+            >
+              <Card className="h-full glass card-hover group">
+                <CardHeader className="text-center pb-4">
+                  <div className="mx-auto mb-4 p-3 rounded-full bg-primary/10 w-fit group-hover:bg-primary/20 transition-colors">
+                    <feature.icon className="w-8 h-8 text-primary" />
+                  </div>
+                  <CardTitle className="text-xl">{feature.title}</CardTitle>
+                  <CardDescription className="text-base">
+                    {feature.description}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    {feature.details}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+
+      {/* CTA Section */}
+      <div className="container mx-auto px-4 py-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
+          className="text-center"
+        >
+          <Card className="glass max-w-2xl mx-auto">
+            <CardHeader>
+              <BrainCircuit className="w-12 h-12 text-primary mx-auto mb-4" />
+              <CardTitle className="text-2xl md:text-3xl">
+                Ready to Explore Your Mind?
+              </CardTitle>
+              <CardDescription className="text-lg">
+                Upload your ChatGPT export and start your journey into the neural landscape of your conversations
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <Button 
+                onClick={() => router.push('/upload')}
+                size="lg" 
+                className="btn-hover shadow-neural-lg w-full sm:w-auto px-12 py-6 text-lg"
+              >
+                <Upload className="w-5 h-5 mr-2" />
+                Get Started Now
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    </div>
   );
 }
