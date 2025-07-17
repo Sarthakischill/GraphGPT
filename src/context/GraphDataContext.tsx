@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useState, ReactNode, useCallback } from 'react';
+import { createContext, useState, ReactNode, useCallback, useMemo } from 'react';
 import { ProcessingService } from '@/services/processingService';
 import { ConversationGraph, ProcessingProgress, VisualizationControls, Conversation, ConversationEmbedding } from '@/types';
 
@@ -33,7 +33,7 @@ export const GraphDataProvider = ({ children }: { children: ReactNode }) => {
   const [embeddings, setEmbeddings] = useState<ConversationEmbedding[]>([]);
   const [similarityMatrix, setSimilarityMatrix] = useState<Map<string, Map<string, number>>>(new Map());
 
-  const processingService = new ProcessingService();
+  const processingService = useMemo(() => new ProcessingService(), []);
 
   const processAndSetGraphData = useCallback(async (file: File) => {
     setIsLoading(true);
@@ -70,7 +70,7 @@ export const GraphDataProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(false);
       return false;
     }
-  }, []);
+  }, [processingService]);
 
   const rebuildGraphWithControls = useCallback(async (controls: VisualizationControls): Promise<ConversationGraph | null> => {
     if (conversations.length === 0 || embeddings.length === 0 || similarityMatrix.size === 0) {
@@ -92,7 +92,7 @@ export const GraphDataProvider = ({ children }: { children: ReactNode }) => {
       setError(errorMessage);
       return null;
     }
-  }, [conversations, embeddings, similarityMatrix]);
+  }, [conversations, embeddings, similarityMatrix, processingService]);
 
   return (
     <GraphDataContext.Provider value={{ graph, isLoading, progress, error, processAndSetGraphData, rebuildGraphWithControls }}>

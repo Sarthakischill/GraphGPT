@@ -3,15 +3,13 @@
 import { useContext } from 'react';
 import { useRouter } from 'next/navigation';
 import { GraphDataContext } from '@/context/GraphDataContext';
-import { Loader2, ArrowRight, BrainCircuit, Network, Eye, Upload, Sparkles } from 'lucide-react';
+import { BrainCircuit } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { motion } from 'motion/react';
 
 export default function HomePage() {
-  const { processAndSetGraphData, isLoading, progress, error } = useContext(GraphDataContext);
+  const { processAndSetGraphData, isLoading, progress } = useContext(GraphDataContext);
   const router = useRouter();
 
   const handleFileSelect = async (file: File) => {
@@ -21,143 +19,221 @@ export default function HomePage() {
     }
   };
 
-  const handleTryDemo = () => {
-    const demoData = {
-      conversations: [
-        {
-          id: "demo-1",
-          title: "JavaScript Best Practices",
-          create_time: Date.now() / 1000 - 86400,
-          update_time: Date.now() / 1000 - 86400,
-          current_node: "node-2",
-          moderation_results: [],
-          mapping: {
-            "node-1": {
-              id: "node-1",
-              message: {
-                id: "msg-1",
-                author: { role: "user" },
-                content: {
-                  content_type: "text",
-                  parts: ["What are some JavaScript best practices for writing clean code?"]
-                },
-                create_time: Date.now() / 1000 - 86400
+  const handleTryDemo = async () => {
+    console.log('Demo button clicked');
+    
+    const demoData = [
+      {
+        id: "demo-1",
+        title: "JavaScript Best Practices",
+        create_time: Date.now() / 1000 - 86400,
+        update_time: Date.now() / 1000 - 86400,
+        current_node: "node-2",
+        moderation_results: [],
+        mapping: {
+          "node-1": {
+            id: "node-1",
+            message: {
+              id: "msg-1",
+              author: { role: "user" },
+              content: {
+                content_type: "text",
+                parts: ["What are some JavaScript best practices for writing clean code?"]
               },
-              parent: null,
-              children: ["node-2"]
+              create_time: Date.now() / 1000 - 86400
             },
-            "node-2": {
-              id: "node-2",
-              message: {
-                id: "msg-2",
-                author: { role: "assistant" },
-                content: {
-                  content_type: "text",
-                  parts: ["Here are some key JavaScript best practices: 1. Use meaningful variable names, 2. Keep functions small and focused, 3. Use const and let instead of var, 4. Handle errors properly with try-catch blocks, 5. Use modern ES6+ features like arrow functions and destructuring."]
-                },
-                create_time: Date.now() / 1000 - 86400 + 30
+            parent: null,
+            children: ["node-2"]
+          },
+          "node-2": {
+            id: "node-2",
+            message: {
+              id: "msg-2",
+              author: { role: "assistant" },
+              content: {
+                content_type: "text",
+                parts: ["Here are some key JavaScript best practices: 1. Use meaningful variable names, 2. Keep functions small and focused, 3. Use const and let instead of var, 4. Handle errors properly with try-catch blocks, 5. Use modern ES6+ features like arrow functions and destructuring."]
               },
-              parent: "node-1",
-              children: []
-            }
-          }
-        },
-        {
-          id: "demo-2",
-          title: "React Hooks Explained",
-          create_time: Date.now() / 1000 - 172800,
-          update_time: Date.now() / 1000 - 172800,
-          current_node: "node-4",
-          moderation_results: [],
-          mapping: {
-            "node-3": {
-              id: "node-3",
-              message: {
-                id: "msg-3",
-                author: { role: "user" },
-                content: {
-                  content_type: "text",
-                  parts: ["Can you explain React hooks and when to use useState vs useEffect?"]
-                },
-                create_time: Date.now() / 1000 - 172800
-              },
-              parent: null,
-              children: ["node-4"]
+              create_time: Date.now() / 1000 - 86400 + 30
             },
-            "node-4": {
-              id: "node-4",
-              message: {
-                id: "msg-4",
-                author: { role: "assistant" },
-                content: {
-                  content_type: "text",
-                  parts: ["React hooks are functions that let you use state and lifecycle features in functional components. useState is for managing component state - use it when you need to store and update values that affect rendering. useEffect is for side effects like API calls, subscriptions, or DOM manipulation - use it when you need to perform actions after render or cleanup."]
-                },
-                create_time: Date.now() / 1000 - 172800 + 45
-              },
-              parent: "node-3",
-              children: []
-            }
-          }
-        },
-        {
-          id: "demo-3",
-          title: "CSS Grid vs Flexbox",
-          create_time: Date.now() / 1000 - 259200,
-          update_time: Date.now() / 1000 - 259200,
-          current_node: "node-6",
-          moderation_results: [],
-          mapping: {
-            "node-5": {
-              id: "node-5",
-              message: {
-                id: "msg-5",
-                author: { role: "user" },
-                content: {
-                  content_type: "text",
-                  parts: ["When should I use CSS Grid vs Flexbox for layouts?"]
-                },
-                create_time: Date.now() / 1000 - 259200
-              },
-              parent: null,
-              children: ["node-6"]
-            },
-            "node-6": {
-              id: "node-6",
-              message: {
-                id: "msg-6",
-                author: { role: "assistant" },
-                content: {
-                  content_type: "text",
-                  parts: ["Use CSS Grid for two-dimensional layouts where you need precise control over both rows and columns. It's perfect for page layouts, card grids, and complex designs. Use Flexbox for one-dimensional layouts - either horizontal or vertical alignment. It's great for navigation bars, centering content, and distributing space between items."]
-                },
-                create_time: Date.now() / 1000 - 259200 + 60
-              },
-              parent: "node-5",
-              children: []
-            }
+            parent: "node-1",
+            children: []
           }
         }
-      ]
-    };
+      },
+      {
+        id: "demo-2",
+        title: "React Hooks Explained",
+        create_time: Date.now() / 1000 - 172800,
+        update_time: Date.now() / 1000 - 172800,
+        current_node: "node-4",
+        moderation_results: [],
+        mapping: {
+          "node-3": {
+            id: "node-3",
+            message: {
+              id: "msg-3",
+              author: { role: "user" },
+              content: {
+                content_type: "text",
+                parts: ["Can you explain React hooks and when to use useState vs useEffect?"]
+              },
+              create_time: Date.now() / 1000 - 172800
+            },
+            parent: null,
+            children: ["node-4"]
+          },
+          "node-4": {
+            id: "node-4",
+            message: {
+              id: "msg-4",
+              author: { role: "assistant" },
+              content: {
+                content_type: "text",
+                parts: ["React hooks are functions that let you use state and lifecycle features in functional components. useState is for managing component state - use it when you need to store and update values that affect rendering. useEffect is for side effects like API calls, subscriptions, or DOM manipulation - use it when you need to perform actions after render or cleanup."]
+              },
+              create_time: Date.now() / 1000 - 172800 + 45
+            },
+            parent: "node-3",
+            children: []
+          }
+        }
+      },
+      {
+        id: "demo-3",
+        title: "CSS Grid vs Flexbox",
+        create_time: Date.now() / 1000 - 259200,
+        update_time: Date.now() / 1000 - 259200,
+        current_node: "node-6",
+        moderation_results: [],
+        mapping: {
+          "node-5": {
+            id: "node-5",
+            message: {
+              id: "msg-5",
+              author: { role: "user" },
+              content: {
+                content_type: "text",
+                parts: ["When should I use CSS Grid vs Flexbox for layouts?"]
+              },
+              create_time: Date.now() / 1000 - 259200
+            },
+            parent: null,
+            children: ["node-6"]
+          },
+          "node-6": {
+            id: "node-6",
+            message: {
+              id: "msg-6",
+              author: { role: "assistant" },
+              content: {
+                content_type: "text",
+                parts: ["Use CSS Grid for two-dimensional layouts where you need precise control over both rows and columns. It's perfect for page layouts, card grids, and complex designs. Use Flexbox for one-dimensional layouts - either horizontal or vertical alignment. It's great for navigation bars, centering content, and distributing space between items."]
+              },
+              create_time: Date.now() / 1000 - 259200 + 60
+            },
+            parent: "node-5",
+            children: []
+          }
+        }
+      },
+      {
+        id: "demo-4",
+        title: "Python Data Analysis",
+        create_time: Date.now() / 1000 - 345600,
+        update_time: Date.now() / 1000 - 345600,
+        current_node: "node-8",
+        moderation_results: [],
+        mapping: {
+          "node-7": {
+            id: "node-7",
+            message: {
+              id: "msg-7",
+              author: { role: "user" },
+              content: {
+                content_type: "text",
+                parts: ["How do I get started with data analysis in Python?"]
+              },
+              create_time: Date.now() / 1000 - 345600
+            },
+            parent: null,
+            children: ["node-8"]
+          },
+          "node-8": {
+            id: "node-8",
+            message: {
+              id: "msg-8",
+              author: { role: "assistant" },
+              content: {
+                content_type: "text",
+                parts: ["To get started with data analysis in Python, you'll want to learn these key libraries: 1. Pandas for data manipulation and analysis, 2. NumPy for numerical computing, 3. Matplotlib and Seaborn for data visualization, 4. Jupyter notebooks for interactive development. Start with loading CSV files using pandas.read_csv() and explore basic operations like filtering, grouping, and aggregating data."]
+              },
+              create_time: Date.now() / 1000 - 345600 + 50
+            },
+            parent: "node-7",
+            children: []
+          }
+        }
+      },
+      {
+        id: "demo-5",
+        title: "Machine Learning Basics",
+        create_time: Date.now() / 1000 - 432000,
+        update_time: Date.now() / 1000 - 432000,
+        current_node: "node-10",
+        moderation_results: [],
+        mapping: {
+          "node-9": {
+            id: "node-9",
+            message: {
+              id: "msg-9",
+              author: { role: "user" },
+              content: {
+                content_type: "text",
+                parts: ["What's the difference between supervised and unsupervised learning?"]
+              },
+              create_time: Date.now() / 1000 - 432000
+            },
+            parent: null,
+            children: ["node-10"]
+          },
+          "node-10": {
+            id: "node-10",
+            message: {
+              id: "msg-10",
+              author: { role: "assistant" },
+              content: {
+                content_type: "text",
+                parts: ["Supervised learning uses labeled training data to learn patterns and make predictions on new data. Examples include classification (predicting categories) and regression (predicting continuous values). Unsupervised learning finds hidden patterns in data without labels, such as clustering similar data points or dimensionality reduction. The key difference is whether you have target labels to train on."]
+              },
+              create_time: Date.now() / 1000 - 432000 + 40
+            },
+            parent: "node-9",
+            children: []
+          }
+        }
+      }
+    ];
 
+    console.log('Creating demo file with data:', demoData);
     const testBlob = new Blob([JSON.stringify(demoData)], { type: 'application/json' });
     const testFile = new File([testBlob], "demo-conversations.json", { type: "application/json" });
-    handleFileSelect(testFile);
+    
+    console.log('Calling handleFileSelect with demo file');
+    const success = await handleFileSelect(testFile);
+    console.log('Demo processing result:', success);
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center dot-pattern">
         <div className="w-full max-w-md space-y-8 text-center">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             className="flex items-center justify-center"
           >
-            <div className="relative">
-              <BrainCircuit className="w-12 h-12 text-foreground animate-pulse" />
-            </div>
+            <BrainCircuit className="w-12 h-12 text-foreground animate-pulse" />
           </motion.div>
           
           <div className="space-y-4">
@@ -180,176 +256,97 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen">
-      {/* Navigation */}
-      <nav className="border-b border-border/50">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <BrainCircuit className="w-6 h-6" />
-              <span className="font-medium">Neural Visualizer</span>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <button className="text-muted-foreground hover:text-foreground transition-colors">
-                Models
-              </button>
-              <button className="text-muted-foreground hover:text-foreground transition-colors">
-                Solutions
-              </button>
-              <button className="text-muted-foreground hover:text-foreground transition-colors">
-                Resources
-              </button>
-              <button className="text-muted-foreground hover:text-foreground transition-colors">
-                Pricing
-              </button>
-              <button className="text-muted-foreground hover:text-foreground transition-colors">
-                Contact sales
-              </button>
-              <button className="text-muted-foreground hover:text-foreground transition-colors">
-                Sign in
-              </button>
-              <button className="btn-minimal">
-                Start for Free
-              </button>
-            </div>
-          </div>
+    <div className="min-h-screen dot-pattern relative">
+      {/* Grid Lines Background */}
+      <div className="absolute inset-0 grid grid-cols-[1fr_2fr_1fr] grid-rows-[1fr_2fr_1fr] pointer-events-none">
+        {/* Grid cells with borders */}
+        <div className="border-r border-b border-border/30"></div>
+        <div className="border-r border-b border-border/30"></div>
+        <div className="border-b border-border/30"></div>
+        <div className="border-r border-b border-border/30"></div>
+        <div className="border-r border-b border-border/30"></div>
+        <div className="border-b border-border/30"></div>
+        <div className="border-r border-border/30"></div>
+        <div className="border-r border-border/30"></div>
+        <div></div>
+      </div>
+      
+      {/* Main Content Container */}
+      <div className="h-screen grid grid-rows-[1fr_2fr_1fr] relative z-10">
+        
+        {/* Top Section - Neural Visualizer Logo (Centered) */}
+        <div className="flex items-center justify-center py-8">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-3"
+          >
+            <BrainCircuit className="w-8 h-8" />
+            <span className="text-2xl font-medium">Neural Visualizer</span>
+          </motion.div>
         </div>
-      </nav>
 
-      {/* Hero Section */}
-      <div className="relative overflow-hidden dot-pattern">
-        <div className="container mx-auto px-6 py-32">
+        {/* Main Hero Section (Centered) */}
+        <div className="flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-center space-y-8 max-w-4xl mx-auto"
+            className="text-center space-y-8 max-w-4xl mx-auto px-8"
           >
             {/* Main Heading */}
             <div className="space-y-6">
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-medium tracking-tight leading-tight">
-                The fastest, ultra-realistic
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight leading-tight">
+                Transform your <span className="underline decoration-2 underline-offset-4">ChatGPT</span> conversations
                 <br />
-                <span className="text-muted-foreground">conversation AI platform</span>
+                <span className="text-muted-foreground">into interactive neural maps</span>
               </h1>
               
-              <div className="space-y-2 max-w-2xl mx-auto">
-                <p className="text-lg text-muted-foreground">
-                  Powered by high performance State Space Model technology.
-                </p>
-                <p className="text-lg text-muted-foreground">
-                  Purpose-built for developers.
-                </p>
-              </div>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Discover patterns, explore connections, and visualize your intellectual journey through AI-powered 3D visualization.
+              </p>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <button 
                 onClick={handleTryDemo}
                 className="btn-minimal"
               >
-                Start for free
+                Try Demo
               </button>
               
               <button 
                 onClick={() => router.push('/upload')}
                 className="btn-minimal-outline"
               >
-                Read the docs
+                Upload Your Data
               </button>
             </div>
           </motion.div>
         </div>
-      </div>
 
-      {/* Features Section */}
-      <div className="container mx-auto px-6 py-24">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-3xl md:text-4xl font-medium mb-4">
-            Explore Your Conversations
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Advanced AI analysis reveals hidden patterns in your ChatGPT history
-          </p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-3 gap-8">
-          {[
-            {
-              icon: Network,
-              title: "3D Neural Network",
-              description: "Visualize conversations as interconnected nodes in 3D space",
-              delay: 0.1
-            },
-            {
-              icon: Eye,
-              title: "Smart Insights",
-              description: "Discover patterns and trends in your conversation history",
-              delay: 0.2
-            },
-            {
-              icon: Sparkles,
-              title: "Interactive Controls",
-              description: "Customize visualization to focus on what matters",
-              delay: 0.3
-            }
-          ].map((feature, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: feature.delay }}
-            >
-              <Card className="glass card-hover h-full">
-                <CardHeader className="text-center pb-4">
-                  <div className="mx-auto mb-4 p-3 rounded-lg bg-accent/30 w-fit">
-                    <feature.icon className="w-6 h-6" />
-                  </div>
-                  <CardTitle className="text-lg font-medium">{feature.title}</CardTitle>
-                  <CardDescription className="text-muted-foreground">
-                    {feature.description}
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-
-      {/* CTA Section */}
-      <div className="container mx-auto px-6 py-24">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="text-center"
-        >
-          <Card className="glass max-w-2xl mx-auto">
-            <CardHeader className="py-12">
-              <BrainCircuit className="w-10 h-10 mx-auto mb-6" />
-              <CardTitle className="text-2xl md:text-3xl font-medium mb-4">
-                Ready to Explore?
-              </CardTitle>
-              <CardDescription className="text-lg text-muted-foreground mb-8">
-                Upload your ChatGPT export and discover the neural landscape of your conversations
-              </CardDescription>
-              <Button 
-                onClick={() => router.push('/upload')}
-                className="btn-minimal"
+        {/* Bottom Credit Section */}
+        <div className="flex items-center justify-center py-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="text-center"
+          >
+            <p className="text-sm text-muted-foreground">
+              Created with ❤️ by{' '}
+              <a 
+                href="https://x.com/Sarthakhuh" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-foreground hover:underline transition-colors"
               >
-                Get Started
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
-            </CardHeader>
-          </Card>
-        </motion.div>
+                @Sarthak
+              </a>
+            </p>
+          </motion.div>
+        </div>
       </div>
     </div>
   );
