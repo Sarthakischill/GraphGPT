@@ -26,7 +26,7 @@ export function ControlPanel({
   onControlsChange,
   graph,
 }: ControlPanelProps) {
-  const updateControl = (key: keyof VisualizationControls, value: any) => {
+  const updateControl = (key: keyof VisualizationControls, value: string | number | boolean) => {
     onControlsChange({
       ...controls,
       [key]: value,

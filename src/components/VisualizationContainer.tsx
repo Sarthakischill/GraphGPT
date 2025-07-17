@@ -1,7 +1,7 @@
 // chat-history-visualizer/src/components/VisualizationContainer.tsx
 "use client";
 
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useCallback } from "react";
 import { ConversationGraph, VisualizationControls } from "@/types";
 import { ControlPanel } from "@/components/ControlPanel";
 import { Graph3D } from "@/components/Graph3D";
@@ -20,7 +20,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "./ui/card";
@@ -53,24 +52,24 @@ export function VisualizationContainer({
     ? graph.nodes.find((node) => node.id === selectedNodeId)
     : null;
 
-  const handleControlsChange = async (newControls: VisualizationControls) => {
+  const handleControlsChange = useCallback(async (newControls: VisualizationControls) => {
     setControls(newControls);
     const rebuiltGraph = await rebuildGraphWithControls(newControls);
     if (rebuiltGraph) {
       setGraph(rebuiltGraph);
     }
-  };
+  }, [rebuildGraphWithControls]);
 
   useEffect(() => {
     handleControlsChange(controls);
-  }, []);
+  }, [controls, handleControlsChange]);
 
   // Close conversation details when switching tabs
   useEffect(() => {
     if (selectedNodeId) {
       setSelectedNodeId(null);
     }
-  }, [activeTab]);
+  }, [activeTab, selectedNodeId]);
 
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden">
@@ -125,7 +124,17 @@ export function VisualizationContainer({
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Removed the (Bug) Adjust similarity threshold warning message as a fix is implemented. */}
+            {/* Graph Control Instructions - Only show in Neural Map tab */}
+            {activeTab === "graph" && (
+              <div className="hidden lg:flex items-center gap-2 px-3 py-2.5 rounded-lg glass text-xs text-muted-foreground">
+                <span className="font-medium">Controls:</span>
+                <span>🖱️ Drag to rotate</span>
+                <span>•</span>
+                <span>🔍 Scroll to zoom</span>
+                <span>•</span>
+                <span>👆 Click nodes</span>
+              </div>
+            )}
 
             <Sheet>
               <SheetTrigger asChild>
@@ -302,12 +311,17 @@ export function VisualizationContainer({
 
             {/* Right Panel - Conversation Detail (only in Explorer tab) */}
             {selectedNode && activeTab === "conversations" && (
-              <div className="w-96 border-l border-border/50 flex-shrink-0">
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className="w-96 border-l border-border/50 flex-shrink-0"
+              >
                 <ConversationDetail
                   conversation={selectedNode.conversation}
                   onClose={() => setSelectedNodeId(null)}
                 />
-              </div>
+              </motion.div>
             )}
           </TabsContent>
         </div>

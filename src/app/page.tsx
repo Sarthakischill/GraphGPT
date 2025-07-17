@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { motion } from 'motion/react';
 
 export default function HomePage() {
-  const { processAndSetGraphData, isLoading, progress, error } = useContext(GraphDataContext);
+  const { processAndSetGraphData, isLoading, progress } = useContext(GraphDataContext);
   const router = useRouter();
 
   const handleFileSelect = async (file: File) => {
@@ -337,7 +337,7 @@ export default function HomePage() {
             <p className="text-sm text-muted-foreground">
               Created with ❤️ by{' '}
               <a 
-                href="https://twitter.com/sarthak" 
+                href="https://x.com/Sarthakhuh" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="text-foreground hover:underline transition-colors"

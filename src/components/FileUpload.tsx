@@ -1,17 +1,13 @@
 "use client";
 
 import { useState, useCallback, useContext } from "react";
-import { Upload, FileText, CheckCircle, X } from "lucide-react";
+import { Upload, CheckCircle, X } from "lucide-react";
 import { createTestDataBlob } from "@/utils/testData";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "./ui/card";
 import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
 import { GraphDataContext } from "@/context/GraphDataContext";
 import { motion } from "motion/react";
 
@@ -27,7 +23,7 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
 
   const validateFile = (file: File): string | null => {
     if (!file.name.endsWith(".json")) {
-      return "Invalid file type. Please upload the 'conversations.json' file from your ChatGPT export.";
+      return "Invalid file type. Please upload the &lsquo;conversations.json&rsquo; file from your ChatGPT export.";
     }
     const maxSize = 100 * 1024 * 1024; // 100MB
     if (file.size > maxSize) {
@@ -193,7 +189,7 @@ export function FileUpload({ onFileSelect }: FileUploadProps) {
             <h3 className="font-medium">How to get your ChatGPT data</h3>
             <div className="text-sm text-muted-foreground space-y-2">
               <p>1. Go to ChatGPT Settings → Data Controls</p>
-              <p>2. Click "Export data" and wait for the email</p>
+              <p>2. Click &ldquo;Export data&rdquo; and wait for the email</p>
               <p>3. Extract the ZIP and upload conversations.json</p>
             </div>
             <div className="text-xs text-muted-foreground pt-4 border-t border-border/50">

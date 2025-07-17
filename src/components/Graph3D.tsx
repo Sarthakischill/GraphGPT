@@ -6,6 +6,47 @@ import { ConversationGraph, VisualizationControls } from "@/types";
 import { BrainCircuit } from "lucide-react";
 import * as THREE from "three";
 
+// Type definitions for 3D Force Graph
+interface GraphNode {
+  id: string;
+  name: string;
+  val: number;
+  color: string;
+  conversation?: {
+    metadata?: {
+      messageCount?: number;
+    };
+  };
+}
+
+interface GraphLink {
+  source: string;
+  target: string;
+  value: number;
+}
+
+interface GraphData {
+  nodes: GraphNode[];
+  links: GraphLink[];
+}
+
+interface ForceGraphInstance {
+  graphData: (data: GraphData) => ForceGraphInstance;
+  backgroundColor: (color: string) => ForceGraphInstance;
+  showNavInfo: (show: boolean) => ForceGraphInstance;
+  onNodeClick: (callback: (node: GraphNode) => void) => ForceGraphInstance;
+  width: (width: number) => ForceGraphInstance;
+  height: (height: number) => ForceGraphInstance;
+  nodeLabel: (callback: (node: GraphNode) => string) => ForceGraphInstance;
+  nodeColor: (callback: (node: GraphNode) => string) => ForceGraphInstance;
+  nodeVal: (callback: (node: GraphNode) => number) => ForceGraphInstance;
+  linkWidth: (callback: (edge: GraphLink) => number) => ForceGraphInstance;
+  linkColor: (callback: () => string) => ForceGraphInstance;
+  linkOpacity: (opacity: number) => ForceGraphInstance;
+  nodeThreeObject: (callback: (node: GraphNode) => THREE.Object3D) => ForceGraphInstance;
+  zoomToFit: (duration?: number, padding?: number) => ForceGraphInstance;
+}
+
 interface Graph3DProps {
   graph: ConversationGraph;
   controls: VisualizationControls;
@@ -20,9 +61,9 @@ const Graph3DComponent = ({
   selectedNodeId,
 }: Graph3DProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const graphRef = useRef<any>(null); // To hold the graph instance
+  const graphRef = useRef<ForceGraphInstance | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [ForceGraph3D, setForceGraph3D] = useState<any>(null);
+  const [ForceGraph3D, setForceGraph3D] = useState<unknown>(null);
 
   // Debug: Log the graph data
   console.log("Graph3D: Received props", {
@@ -36,8 +77,8 @@ const Graph3DComponent = ({
   useEffect(() => {
     const loadForceGraph = async () => {
       try {
-        const module = await import("3d-force-graph");
-        setForceGraph3D(() => module.default);
+        const forceGraphModule = await import("3d-force-graph");
+        setForceGraph3D(() => forceGraphModule.default);
         setIsLoading(false);
       } catch (error) {
         console.error("Failed to load 3D force graph:", error);
@@ -103,7 +144,7 @@ const Graph3DComponent = ({
         );
 
         // Use the canonical double-invocation pattern for the library
-        const graphInstance = ForceGraph3D()(container);
+        const graphInstance = (ForceGraph3D as any)()(container);
 
         console.log("Graph3D: ForceGraph3D instance created:", graphInstance);
         console.log(
@@ -115,7 +156,7 @@ const Graph3DComponent = ({
         graphInstance
           .backgroundColor("rgba(0,0,0,0)")
           .showNavInfo(false)
-          .onNodeClick((node: any) => onNodeClick(node.id as string))
+          .onNodeClick((node: { id: string }) => onNodeClick(node.id))
           .width(width)
           .height(height);
 
@@ -143,11 +184,31 @@ const Graph3DComponent = ({
           console.log("Graph3D: Setting initial graph data", {
             nodeCount: initialGraphData.nodes.length,
             linkCount: initialGraphData.links.length,
+            sampleNode: initialGraphData.nodes[0],
+            sampleLink: initialGraphData.links[0]
           });
-          graphInstance.graphData(initialGraphData);
+          
+          try {
+            (graphInstance as any).graphData(initialGraphData);
+            console.log("Graph3D: Initial graph data set successfully");
+            
+            // Force a render after setting data
+            setTimeout(() => {
+              if (graphInstance) {
+                try {
+                  (graphInstance as any).zoomToFit(400, 30);
+                  console.log("Graph3D: Initial zoom to fit completed");
+                } catch (zoomError) {
+                  console.warn("Graph3D: Initial zoom error:", zoomError);
+                }
+              }
+            }, 100);
+          } catch (dataError) {
+            console.error("Graph3D: Error setting initial graph data:", dataError);
+          }
 
           // Configure node and link properties immediately
-          graphInstance
+          (graphInstance as any)
             .nodeLabel(
               (node: any) =>
                 `<div class="p-2 rounded-md bg-gray-900 text-white border border-gray-700">${
@@ -228,7 +289,7 @@ const Graph3DComponent = ({
             const newWidth = Math.max(containerRef.current.clientWidth, 800);
             const newHeight = Math.max(containerRef.current.clientHeight, 600);
             console.log("Graph3D: Resizing", { newWidth, newHeight });
-            graphRef.current.width(newWidth).height(newHeight);
+            (graphRef.current as any).width(newWidth).height(newHeight);
           }
         };
         window.addEventListener("resize", handleResize);
@@ -256,7 +317,7 @@ const Graph3DComponent = ({
     return () => {
       window.removeEventListener("resize", () => {});
     };
-  }, [ForceGraph3D, onNodeClick, graph, controls.showEdges]); // Added graph and controls.showEdges as dependencies for initial data setup
+  }, [ForceGraph3D, onNodeClick, graph, controls.showEdges, controls.edgeThickness]); // Added graph and controls dependencies for initial data setup
 
   // Update graph data when graph prop changes - SIMPLIFIED VERSION
   useEffect(() => {
@@ -285,10 +346,10 @@ const Graph3DComponent = ({
 
       try {
         // Simply set the graph data without complex simulation management
-        graphRef.current.graphData(graphData);
+        (graphRef.current as any).graphData(graphData);
         
         // Update node colors for selection
-        graphRef.current.nodeColor((node: any) =>
+        (graphRef.current as any).nodeColor((node: any) =>
           node.id === selectedNodeId ? "#FFD700" : node.color
         );
 
@@ -296,7 +357,7 @@ const Graph3DComponent = ({
         setTimeout(() => {
           if (graphRef.current) {
             try {
-              graphRef.current.zoomToFit(400, 30);
+              (graphRef.current as any).zoomToFit(400, 30);
             } catch (zoomError) {
               console.warn("Graph3D: Error zooming to fit:", zoomError);
             }
@@ -306,13 +367,13 @@ const Graph3DComponent = ({
         console.error("Graph3D: Error updating graph data", error);
       }
     }
-  }, [graph, controls.showEdges, selectedNodeId]);
+  }, [graph, controls.showEdges, controls.edgeThickness, selectedNodeId]);
 
   // Update selected node highlighting - SIMPLIFIED
   useEffect(() => {
     if (graphRef.current && selectedNodeId) {
       try {
-        graphRef.current.nodeColor((node: any) =>
+        (graphRef.current as any).nodeColor((node: any) =>
           node.id === selectedNodeId ? "#FFD700" : node.color
         );
       } catch (error) {
@@ -339,12 +400,12 @@ const Graph3DComponent = ({
           );
 
           console.log("Graph3D: Resizing graph", { newWidth, newHeight });
-          graphRef.current.width(newWidth).height(newHeight);
+          (graphRef.current as any).width(newWidth).height(newHeight);
 
           // Re-center the graph after resize
           setTimeout(() => {
             if (graphRef.current) {
-              graphRef.current.zoomToFit(400, 30);
+              (graphRef.current as any).zoomToFit(400, 30);
             }
           }, 100);
         }
@@ -388,8 +449,8 @@ const Graph3DComponent = ({
               600
             );
 
-            graphRef.current.width(newWidth).height(newHeight);
-            graphRef.current.zoomToFit(400, 30);
+            (graphRef.current as any).width(newWidth).height(newHeight);
+            (graphRef.current as any).zoomToFit(400, 30);
           }
         }, 200);
       }
@@ -466,7 +527,7 @@ const Graph3DComponent = ({
               };
               if (graphRef.current) {
                 console.log("Testing with dummy data");
-                graphRef.current.graphData(testData);
+                (graphRef.current as any).graphData(testData);
               }
             }}
             className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
@@ -496,9 +557,9 @@ const Graph3DComponent = ({
             if (graphRef.current) {
               console.log("Focus button clicked - centering graph");
               // Multiple attempts to ensure proper focusing
-              graphRef.current.zoomToFit(400, 20);
-              setTimeout(() => graphRef.current.zoomToFit(400, 20), 100);
-              setTimeout(() => graphRef.current.zoomToFit(400, 20), 500);
+              (graphRef.current as any).zoomToFit(400, 20);
+              setTimeout(() => (graphRef.current as any)?.zoomToFit(400, 20), 100);
+              setTimeout(() => (graphRef.current as any)?.zoomToFit(400, 20), 500);
             }
           }}
           className="px-4 py-2 bg-blue-600/90 hover:bg-blue-600 text-white text-sm rounded-md backdrop-blur-sm border border-blue-500/30 transition-colors shadow-lg"
