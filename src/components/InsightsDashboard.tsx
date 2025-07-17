@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 import { ConversationGraph } from '@/types'
-import { BarChart3, TrendingUp, MessageSquare, Calendar, Hash, Users, Activity, Brain, Zap, Network } from 'lucide-react'
+import { BarChart3, TrendingUp, MessageSquare, Hash, Users, Activity, Brain, Network } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card'
 import { Badge } from './ui/badge'
 import { Progress } from './ui/progress'
@@ -57,15 +57,15 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
           animate={{ opacity: 1, scale: 1 }}
           className="space-y-4"
         >
-          <Brain className="w-16 h-16 text-muted-foreground mx-auto" />
-          <p className="text-muted-foreground text-lg">No data to display insights.</p>
+          <Brain className="w-12 h-12 text-muted-foreground mx-auto" />
+          <p className="text-muted-foreground">No data to display insights.</p>
         </motion.div>
       </div>
     )
   }
 
   return (
-    <div className="p-6 md:p-8 overflow-y-auto h-full bg-gradient-to-br from-background/50 to-background">
+    <div className="p-6 md:p-8 overflow-y-auto h-full">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <motion.header
@@ -73,11 +73,11 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
           animate={{ opacity: 1, y: 0 }}
           className="text-center space-y-4"
         >
-          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-full glass">
-            <BarChart3 className="w-6 h-6 text-primary" />
-            <h2 className="text-2xl md:text-3xl font-bold">Neural Insights</h2>
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-lg glass">
+            <BarChart3 className="w-6 h-6" />
+            <h2 className="text-2xl md:text-3xl font-medium">Neural Insights</h2>
           </div>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground max-w-2xl mx-auto">
             Deep analysis of your conversation patterns and knowledge landscape
           </p>
         </motion.header>
@@ -90,8 +90,6 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
               title: "Total Conversations",
               value: insights.totalConversations,
               subtitle: "Knowledge sessions",
-              color: "text-blue-500",
-              bgColor: "bg-blue-500/10",
               delay: 0.1
             },
             {
@@ -99,8 +97,6 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
               title: "Total Messages",
               value: insights.totalMessages.toLocaleString(),
               subtitle: `Avg ${insights.avgMessagesPerConv} per conversation`,
-              color: "text-green-500",
-              bgColor: "bg-green-500/10",
               delay: 0.2
             },
             {
@@ -108,8 +104,6 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
               title: "Total Words",
               value: insights.totalWords.toLocaleString(),
               subtitle: `Avg ${insights.avgWordsPerConv} per conversation`,
-              color: "text-purple-500",
-              bgColor: "bg-purple-500/10",
               delay: 0.3
             },
             {
@@ -117,8 +111,6 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
               title: "Neural Connections",
               value: insights.totalConnections,
               subtitle: `${insights.totalClusters} identified clusters`,
-              color: "text-orange-500",
-              bgColor: "bg-orange-500/10",
               delay: 0.4
             }
           ].map((metric, index) => (
@@ -131,19 +123,19 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
               <Card className="glass card-hover">
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
-                    <div className={`p-2 rounded-lg ${metric.bgColor}`}>
-                      <metric.icon className={`w-5 h-5 ${metric.color}`} />
+                    <div className="p-2 rounded-lg bg-accent/30">
+                      <metric.icon className="w-5 h-5" />
                     </div>
                     <Badge variant="secondary" className="glass">
                       Active
                     </Badge>
                   </div>
-                  <CardTitle className="text-base font-medium text-muted-foreground">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">
                     {metric.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <div className="text-3xl font-bold mb-1">{metric.value}</div>
+                  <div className="text-2xl font-medium mb-1">{metric.value}</div>
                   <p className="text-sm text-muted-foreground">{metric.subtitle}</p>
                 </CardContent>
               </Card>
@@ -161,9 +153,9 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
           >
             <Card className="glass h-full">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <Brain className="w-5 h-5 text-primary" />
+                <CardTitle className="flex items-center gap-2 font-medium">
+                  <div className="p-2 rounded-lg bg-accent/30">
+                    <Brain className="w-5 h-5" />
                   </div>
                   Knowledge Domains
                 </CardTitle>
@@ -183,7 +175,7 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
                     >
                       <div className="flex justify-between items-center">
                         <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full bg-primary/60" />
+                          <div className="w-2 h-2 rounded-full bg-foreground/60" />
                           <span className="font-medium capitalize">{topic}</span>
                         </div>
                         <Badge variant="outline" className="glass">
@@ -192,7 +184,7 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
                       </div>
                       <Progress 
                         value={(count / insights.totalConversations) * 100} 
-                        className="h-2"
+                        className="h-1"
                       />
                     </motion.div>
                   ))
@@ -213,9 +205,9 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
           >
             <Card className="glass h-full">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <Activity className="w-5 h-5 text-primary" />
+                <CardTitle className="flex items-center gap-2 font-medium">
+                  <div className="p-2 rounded-lg bg-accent/30">
+                    <Activity className="w-5 h-5" />
                   </div>
                   Conversation Sentiment
                 </CardTitle>
@@ -228,23 +220,20 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
                   { 
                     label: 'Positive', 
                     count: insights.sentimentCounts.positive, 
-                    color: 'bg-green-500',
-                    bgColor: 'bg-green-500/10',
-                    textColor: 'text-green-500'
+                    color: 'bg-green-400/20',
+                    textColor: 'text-green-400'
                   },
                   { 
                     label: 'Neutral', 
                     count: insights.sentimentCounts.neutral, 
-                    color: 'bg-blue-500',
-                    bgColor: 'bg-blue-500/10',
-                    textColor: 'text-blue-500'
+                    color: 'bg-muted-foreground/20',
+                    textColor: 'text-muted-foreground'
                   },
                   { 
                     label: 'Negative', 
                     count: insights.sentimentCounts.negative, 
-                    color: 'bg-red-500',
-                    bgColor: 'bg-red-500/10',
-                    textColor: 'text-red-500'
+                    color: 'bg-red-400/20',
+                    textColor: 'text-red-400'
                   }
                 ].map((sentiment, index) => (
                   <motion.div
@@ -252,7 +241,7 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7 + index * 0.1 }}
-                    className={`p-4 rounded-lg ${sentiment.bgColor} border border-current/20`}
+                    className={`p-4 rounded-lg ${sentiment.color} border border-current/20`}
                   >
                     <div className="flex items-center justify-between mb-2">
                       <span className={`font-medium ${sentiment.textColor}`}>
@@ -264,7 +253,7 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
                     </div>
                     <Progress 
                       value={(sentiment.count / insights.totalConversations) * 100}
-                      className="h-2"
+                      className="h-1"
                     />
                     <p className="text-sm text-muted-foreground mt-2">
                       {((sentiment.count / insights.totalConversations) * 100).toFixed(1)}% of conversations
@@ -285,9 +274,9 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
           >
             <Card className="glass">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <Users className="w-5 h-5 text-primary" />
+                <CardTitle className="flex items-center gap-2 font-medium">
+                  <div className="p-2 rounded-lg bg-accent/30">
+                    <Users className="w-5 h-5" />
                   </div>
                   Neural Clusters
                 </CardTitle>
@@ -307,7 +296,7 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
                     >
                       <div className="flex items-center gap-3 mb-3">
                         <div 
-                          className="w-4 h-4 rounded-full flex-shrink-0" 
+                          className="w-3 h-3 rounded-full flex-shrink-0" 
                           style={{ backgroundColor: cluster.color }}
                         />
                         <div className="flex-1 min-w-0">

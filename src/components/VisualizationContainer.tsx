@@ -11,8 +11,6 @@ import {
   BarChart3,
   AppWindow,
   BrainCircuit,
-  Home,
-  Upload,
   Menu,
   X,
 } from "lucide-react";
@@ -70,19 +68,17 @@ export function VisualizationContainer({
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col bg-background overflow-hidden">
+    <div className="h-screen w-screen flex flex-col overflow-hidden">
       {/* Header */}
       <motion.header 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between p-4 border-b border-border/50 glass"
+        className="flex items-center justify-between p-4 border-b border-border/50"
       >
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-lg bg-primary/10">
-            <BrainCircuit className="w-6 h-6 text-primary" />
-          </div>
+          <BrainCircuit className="w-6 h-6" />
           <div>
-            <h1 className="text-xl font-bold">Neural Dashboard</h1>
+            <h1 className="text-lg font-medium">Neural Dashboard</h1>
             <p className="text-sm text-muted-foreground">
               {graph.nodes.length} conversations • {graph.clusters.length} clusters
             </p>
@@ -91,8 +87,8 @@ export function VisualizationContainer({
         
         <div className="flex items-center gap-2">
           <Badge variant="secondary" className="glass hidden sm:flex">
-            <div className="w-2 h-2 rounded-full bg-green-500 mr-2 status-online" />
-            Live Analysis
+            <div className="w-2 h-2 rounded-full bg-green-400 mr-2 status-dot" />
+            Active
           </Badge>
           
           <Sheet>
@@ -105,7 +101,7 @@ export function VisualizationContainer({
             <SheetContent className="w-[400px] p-0 glass">
               <SheetHeader className="p-6 pb-2 border-b border-border/50">
                 <SheetTitle className="flex items-center gap-2">
-                  <Settings className="w-5 h-5 text-primary" />
+                  <Settings className="w-5 h-5" />
                   Visualization Controls
                 </SheetTitle>
               </SheetHeader>
@@ -125,7 +121,7 @@ export function VisualizationContainer({
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            className={`flex flex-col border-r border-border/50 glass transition-all duration-300 ${
+            className={`flex flex-col border-r border-border/50 transition-all duration-300 ${
               sidebarCollapsed ? "w-16" : "w-64"
             }`}
           >
@@ -154,7 +150,7 @@ export function VisualizationContainer({
                     : "w-full justify-start gap-3 h-12 px-4"
                 } btn-hover glass`}
               >
-                <BrainCircuit className="w-5 h-5 text-primary" />
+                <BrainCircuit className="w-5 h-5" />
                 {!sidebarCollapsed && <span className="font-medium">Neural Map</span>}
               </TabsTrigger>
               
@@ -166,7 +162,7 @@ export function VisualizationContainer({
                     : "w-full justify-start gap-3 h-12 px-4"
                 } btn-hover glass`}
               >
-                <BarChart3 className="w-5 h-5 text-primary" />
+                <BarChart3 className="w-5 h-5" />
                 {!sidebarCollapsed && <span className="font-medium">Insights</span>}
               </TabsTrigger>
               
@@ -178,7 +174,7 @@ export function VisualizationContainer({
                     : "w-full justify-start gap-3 h-12 px-4"
                 } btn-hover glass`}
               >
-                <AppWindow className="w-5 h-5 text-primary" />
+                <AppWindow className="w-5 h-5" />
                 {!sidebarCollapsed && <span className="font-medium">Explorer</span>}
               </TabsTrigger>
             </TabsList>
@@ -211,13 +207,10 @@ export function VisualizationContainer({
                       animate={{ scale: 1, opacity: 1 }}
                       className="text-center space-y-4"
                     >
-                      <div className="relative">
-                        <BrainCircuit className="w-16 h-16 text-primary mx-auto pulse-glow" />
-                        <div className="absolute inset-0 w-16 h-16 border-2 border-primary/30 rounded-full animate-ping mx-auto" />
-                      </div>
+                      <BrainCircuit className="w-12 h-12 mx-auto animate-pulse" />
                       <div>
-                        <p className="text-lg font-medium">Preparing Neural Map</p>
-                        <p className="text-muted-foreground">Processing conversation data...</p>
+                        <p className="font-medium">Preparing Neural Map</p>
+                        <p className="text-muted-foreground text-sm">Processing conversation data...</p>
                       </div>
                     </motion.div>
                   </div>
@@ -247,7 +240,7 @@ export function VisualizationContainer({
                 className="p-6"
               >
                 <div className="mb-6">
-                  <h2 className="text-2xl font-bold mb-2">Conversation Explorer</h2>
+                  <h2 className="text-xl font-medium mb-2">Conversation Explorer</h2>
                   <p className="text-muted-foreground">
                     Browse and explore all your conversations
                   </p>
@@ -257,8 +250,8 @@ export function VisualizationContainer({
                   {graph.nodes.map((node) => (
                     <motion.div
                       key={node.id}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
                     >
                       <Card
                         className="cursor-pointer card-hover glass"
@@ -267,10 +260,10 @@ export function VisualizationContainer({
                         <CardHeader>
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <CardTitle className="text-lg line-clamp-2">
+                              <CardTitle className="text-base font-medium line-clamp-2">
                                 {node.conversation.title}
                               </CardTitle>
-                              <CardDescription className="flex items-center gap-4 mt-2">
+                              <CardDescription className="flex items-center gap-4 mt-2 text-muted-foreground">
                                 <span>{node.conversation.messages.length} messages</span>
                                 <span>{node.conversation.metadata.wordCount} words</span>
                                 <Badge variant="secondary" className="glass">
@@ -279,7 +272,7 @@ export function VisualizationContainer({
                               </CardDescription>
                             </div>
                             <div 
-                              className="w-4 h-4 rounded-full flex-shrink-0 mt-1" 
+                              className="w-3 h-3 rounded-full flex-shrink-0 mt-1" 
                               style={{ backgroundColor: node.color }}
                             />
                           </div>
@@ -313,7 +306,7 @@ export function VisualizationContainer({
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
-            className="w-96 border-l border-border/50 glass flex-shrink-0"
+            className="w-96 border-l border-border/50 flex-shrink-0"
           >
             <ConversationDetail
               conversation={selectedNode.conversation}

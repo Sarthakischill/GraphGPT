@@ -33,9 +33,9 @@ export function ControlPanel({ controls, onControlsChange, graph }: ControlPanel
           animate={{ opacity: 1, y: 0 }}
           className="space-y-4"
         >
-          <Label className="flex items-center gap-2 text-base font-medium">
-            <div className="p-1 rounded bg-primary/10">
-              <Sliders className="w-4 h-4 text-primary" />
+          <Label className="flex items-center gap-2 text-sm font-medium">
+            <div className="p-1 rounded bg-accent/30">
+              <Sliders className="w-4 h-4" />
             </div>
             Similarity Threshold
           </Label>
@@ -65,9 +65,9 @@ export function ControlPanel({ controls, onControlsChange, graph }: ControlPanel
           transition={{ delay: 0.1 }}
           className="space-y-4"
         >
-          <Label className="flex items-center gap-2 text-base font-medium">
-            <div className="p-1 rounded bg-primary/10">
-              <Maximize2 className="w-4 h-4 text-primary" />
+          <Label className="flex items-center gap-2 text-sm font-medium">
+            <div className="p-1 rounded bg-accent/30">
+              <Maximize2 className="w-4 h-4" />
             </div>
             Node Size
           </Label>
@@ -108,9 +108,9 @@ export function ControlPanel({ controls, onControlsChange, graph }: ControlPanel
           transition={{ delay: 0.2 }}
           className="space-y-4"
         >
-          <Label className="flex items-center gap-2 text-base font-medium">
-            <div className="p-1 rounded bg-primary/10">
-              <Palette className="w-4 h-4 text-primary" />
+          <Label className="flex items-center gap-2 text-sm font-medium">
+            <div className="p-1 rounded bg-accent/30">
+              <Palette className="w-4 h-4" />
             </div>
             Color Scheme
           </Label>
@@ -124,19 +124,19 @@ export function ControlPanel({ controls, onControlsChange, graph }: ControlPanel
             <SelectContent className="glass">
               <SelectItem value="cluster">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-primary" />
+                  <div className="w-3 h-3 rounded-full bg-foreground" />
                   By Cluster
                 </div>
               </SelectItem>
               <SelectItem value="chronological">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-gradient-to-r from-green-500 to-red-500" />
+                  <div className="w-3 h-3 rounded-full bg-gradient-to-r from-muted-foreground to-foreground" />
                   By Date
                 </div>
               </SelectItem>
               <SelectItem value="topic">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-gradient-to-r from-blue-500 to-purple-500" />
+                  <div className="w-3 h-3 rounded-full bg-gradient-to-r from-muted to-foreground" />
                   By Topic
                 </div>
               </SelectItem>
@@ -151,9 +151,9 @@ export function ControlPanel({ controls, onControlsChange, graph }: ControlPanel
           transition={{ delay: 0.3 }}
           className="space-y-4"
         >
-          <Label className="flex items-center gap-2 text-base font-medium">
-            <div className="p-1 rounded bg-primary/10">
-              <Component className="w-4 h-4 text-primary" />
+          <Label className="flex items-center gap-2 text-sm font-medium">
+            <div className="p-1 rounded bg-accent/30">
+              <Component className="w-4 h-4" />
             </div>
             Clustering Algorithm
           </Label>
@@ -180,9 +180,9 @@ export function ControlPanel({ controls, onControlsChange, graph }: ControlPanel
           className="space-y-6"
         >
           <div className="flex items-center justify-between">
-            <Label htmlFor="show-edges" className="flex items-center gap-2 text-base font-medium">
-              <div className="p-1 rounded bg-primary/10">
-                {controls.showEdges ? <Eye className="w-4 h-4 text-primary" /> : <EyeOff className="w-4 h-4 text-muted-foreground" />}
+            <Label htmlFor="show-edges" className="flex items-center gap-2 text-sm font-medium">
+              <div className="p-1 rounded bg-accent/30">
+                {controls.showEdges ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
               </div>
               Show Connections
             </Label>
@@ -228,26 +228,26 @@ export function ControlPanel({ controls, onControlsChange, graph }: ControlPanel
         >
           <Card className="glass">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <div className="p-1 rounded bg-primary/10">
-                  <Activity className="w-4 h-4 text-primary" />
+              <CardTitle className="flex items-center gap-2 text-base font-medium">
+                <div className="p-1 rounded bg-accent/30">
+                  <Activity className="w-4 h-4" />
                 </div>
                 Network Statistics
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-3 rounded-lg bg-primary/5 border border-primary/20">
-                  <div className="text-2xl font-bold text-primary">{graph.nodes.length}</div>
+                <div className="text-center p-3 rounded-lg bg-accent/20 border border-border/50">
+                  <div className="text-xl font-medium">{graph.nodes.length}</div>
                   <div className="text-xs text-muted-foreground">Conversations</div>
                 </div>
-                <div className="text-center p-3 rounded-lg bg-primary/5 border border-primary/20">
-                  <div className="text-2xl font-bold text-primary">{graph.clusters.length}</div>
+                <div className="text-center p-3 rounded-lg bg-accent/20 border border-border/50">
+                  <div className="text-xl font-medium">{graph.clusters.length}</div>
                   <div className="text-xs text-muted-foreground">Clusters</div>
                 </div>
               </div>
-              <div className="text-center p-3 rounded-lg bg-primary/5 border border-primary/20">
-                <div className="text-2xl font-bold text-primary">{graph.edges.length}</div>
+              <div className="text-center p-3 rounded-lg bg-accent/20 border border-border/50">
+                <div className="text-xl font-medium">{graph.edges.length}</div>
                 <div className="text-xs text-muted-foreground">Active Connections</div>
               </div>
             </CardContent>

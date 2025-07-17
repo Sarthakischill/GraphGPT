@@ -36,22 +36,22 @@ export function ConversationDetail({ conversation, onClose }: ConversationDetail
 
   const getSentimentIcon = (sentiment: string) => {
     switch (sentiment) {
-      case 'positive': return <Heart className="w-4 h-4 text-green-500" />
-      case 'negative': return <X className="w-4 h-4 text-red-500" />
-      default: return <Brain className="w-4 h-4 text-blue-500" />
+      case 'positive': return <Heart className="w-4 h-4 text-green-400" />
+      case 'negative': return <X className="w-4 h-4 text-red-400" />
+      default: return <Brain className="w-4 h-4 text-muted-foreground" />
     }
   }
 
   const getSentimentColor = (sentiment: string) => {
     switch (sentiment) {
-      case 'positive': return 'border-green-500/30 bg-green-500/5'
-      case 'negative': return 'border-red-500/30 bg-red-500/5'
-      default: return 'border-blue-500/30 bg-blue-500/5'
+      case 'positive': return 'border-green-400/30 bg-green-400/5'
+      case 'negative': return 'border-red-400/30 bg-red-400/5'
+      default: return 'border-border/50 bg-accent/10'
     }
   }
 
   return (
-    <div className="h-full flex flex-col bg-card/50 backdrop-blur-sm">
+    <div className="h-full flex flex-col">
       {/* Header */}
       <motion.div 
         initial={{ opacity: 0, y: -10 }}
@@ -60,7 +60,7 @@ export function ConversationDetail({ conversation, onClose }: ConversationDetail
       >
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            <h2 className="font-semibold text-xl mb-3 line-clamp-2 leading-tight">
+            <h2 className="font-medium text-lg mb-3 line-clamp-2 leading-tight">
               {conversation.title}
             </h2>
             
@@ -107,11 +107,11 @@ export function ConversationDetail({ conversation, onClose }: ConversationDetail
             <Card className="glass">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3 mb-3">
-                  <div className="p-2 rounded-full bg-primary/10">
-                    <Brain className="w-4 h-4 text-primary" />
+                  <div className="p-2 rounded-lg bg-accent/30">
+                    <Brain className="w-4 h-4" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-medium mb-2">Conversation Summary</h3>
+                    <h3 className="font-medium mb-2">Summary</h3>
                     <p className="text-muted-foreground text-sm leading-relaxed">
                       {conversation.summary}
                     </p>
@@ -156,7 +156,7 @@ export function ConversationDetail({ conversation, onClose }: ConversationDetail
             transition={{ delay: 0.2 }}
           >
             <h3 className="font-medium mb-4 flex items-center gap-2">
-              <MessageCircle className="w-4 h-4 text-primary" />
+              <MessageCircle className="w-4 h-4" />
               Conversation Flow
             </h3>
             
@@ -173,21 +173,21 @@ export function ConversationDetail({ conversation, onClose }: ConversationDetail
                 >
                   <Card className={`glass transition-smooth ${
                     message.role === 'user' 
-                      ? 'border-blue-500/30 bg-blue-500/5' 
-                      : 'border-purple-500/30 bg-purple-500/5'
+                      ? 'border-muted-foreground/20 bg-accent/10' 
+                      : 'border-border/50 bg-card/50'
                   }`}>
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center gap-2">
                           <div className={`p-1.5 rounded-full ${
                             message.role === 'user' 
-                              ? 'bg-blue-500/20' 
-                              : 'bg-purple-500/20'
+                              ? 'bg-muted-foreground/20' 
+                              : 'bg-accent/30'
                           }`}>
                             {message.role === 'user' ? (
-                              <User className="w-3 h-3 text-blue-400" />
+                              <User className="w-3 h-3" />
                             ) : (
-                              <Bot className="w-3 h-3 text-purple-400" />
+                              <Bot className="w-3 h-3" />
                             )}
                           </div>
                           <span className="font-medium text-sm capitalize">
@@ -206,14 +206,14 @@ export function ConversationDetail({ conversation, onClose }: ConversationDetail
                           title="Copy message"
                         >
                           {copiedMessageId === `${index}` ? (
-                            <Check className="w-3 h-3 text-green-500" />
+                            <Check className="w-3 h-3 text-green-400" />
                           ) : (
                             <Copy className="w-3 h-3" />
                           )}
                         </Button>
                       </div>
                       
-                      <div className="text-sm leading-relaxed whitespace-pre-wrap font-sans">
+                      <div className="text-sm leading-relaxed whitespace-pre-wrap">
                         {message.content}
                       </div>
                     </CardContent>

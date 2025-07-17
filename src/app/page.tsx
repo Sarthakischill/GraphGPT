@@ -2,9 +2,8 @@
 
 import { useContext } from 'react';
 import { useRouter } from 'next/navigation';
-import { FileUpload } from '@/components/FileUpload';
 import { GraphDataContext } from '@/context/GraphDataContext';
-import { Loader2, ArrowRight, Zap, BrainCircuit, Network, Eye, Upload, Sparkles } from 'lucide-react';
+import { Loader2, ArrowRight, BrainCircuit, Network, Eye, Upload, Sparkles } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -149,7 +148,7 @@ export default function HomePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-background/95">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="w-full max-w-md space-y-8 text-center">
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
@@ -157,21 +156,20 @@ export default function HomePage() {
             className="flex items-center justify-center"
           >
             <div className="relative">
-              <BrainCircuit className="w-16 h-16 text-primary pulse-glow" />
-              <div className="absolute inset-0 w-16 h-16 border-2 border-primary/30 rounded-full animate-ping" />
+              <BrainCircuit className="w-12 h-12 text-foreground animate-pulse" />
             </div>
           </motion.div>
           
           <div className="space-y-4">
-            <h2 className="text-2xl font-bold gradient-text">
-              Processing Your Neural Universe
+            <h2 className="text-xl font-medium">
+              Processing Your Conversations
             </h2>
             {progress && (
               <div className="space-y-3">
-                <Progress value={progress.progress} className="w-full h-2" />
+                <Progress value={progress.progress} className="w-full h-1" />
                 <p className="text-muted-foreground text-sm">{progress.message}</p>
                 <Badge variant="secondary" className="glass">
-                  {Math.round(progress.progress)}% Complete
+                  {Math.round(progress.progress)}%
                 </Badge>
               </div>
             )}
@@ -182,18 +180,46 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-background/95">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-primary rounded-full animate-pulse" />
-          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-primary/60 rounded-full animate-pulse delay-1000" />
-          <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-primary/40 rounded-full animate-pulse delay-2000" />
-          <div className="neural-line absolute top-1/2 left-0 w-full" />
+    <div className="min-h-screen">
+      {/* Navigation */}
+      <nav className="border-b border-border/50">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <BrainCircuit className="w-6 h-6" />
+              <span className="font-medium">Neural Visualizer</span>
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <button className="text-muted-foreground hover:text-foreground transition-colors">
+                Models
+              </button>
+              <button className="text-muted-foreground hover:text-foreground transition-colors">
+                Solutions
+              </button>
+              <button className="text-muted-foreground hover:text-foreground transition-colors">
+                Resources
+              </button>
+              <button className="text-muted-foreground hover:text-foreground transition-colors">
+                Pricing
+              </button>
+              <button className="text-muted-foreground hover:text-foreground transition-colors">
+                Contact sales
+              </button>
+              <button className="text-muted-foreground hover:text-foreground transition-colors">
+                Sign in
+              </button>
+              <button className="btn-minimal">
+                Start for Free
+              </button>
+            </div>
+          </div>
         </div>
+      </nav>
 
-        <div className="relative z-10 container mx-auto px-4 py-20">
+      {/* Hero Section */}
+      <div className="relative overflow-hidden dot-pattern">
+        <div className="container mx-auto px-6 py-32">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -201,65 +227,56 @@ export default function HomePage() {
             className="text-center space-y-8 max-w-4xl mx-auto"
           >
             {/* Main Heading */}
-            <div className="space-y-4">
-              <Badge variant="secondary" className="glass px-4 py-2">
-                <Sparkles className="w-4 h-4 mr-2" />
-                AI-Powered Conversation Analysis
-              </Badge>
-              
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight">
-                Visualize Your
-                <span className="block gradient-text">ChatGPT History</span>
-                <span className="block text-muted-foreground text-2xl md:text-3xl lg:text-4xl font-normal mt-2">
-                  in 3D Neural Space
-                </span>
+            <div className="space-y-6">
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-medium tracking-tight leading-tight">
+                The fastest, ultra-realistic
+                <br />
+                <span className="text-muted-foreground">conversation AI platform</span>
               </h1>
               
-              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                Transform your conversations into an interactive neural network. 
-                Discover patterns, explore connections, and visualize your intellectual journey.
-              </p>
+              <div className="space-y-2 max-w-2xl mx-auto">
+                <p className="text-lg text-muted-foreground">
+                  Powered by high performance State Space Model technology.
+                </p>
+                <p className="text-lg text-muted-foreground">
+                  Purpose-built for developers.
+                </p>
+              </div>
             </div>
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
-              <Button 
+              <button 
                 onClick={handleTryDemo}
-                size="lg" 
-                className="btn-hover shadow-neural group px-8 py-6 text-lg"
+                className="btn-minimal"
               >
-                <Zap className="w-5 h-5 mr-2 group-hover:animate-pulse" />
-                Try Interactive Demo
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
+                Start for free
+              </button>
               
-              <Button 
-                variant="outline" 
-                size="lg"
+              <button 
                 onClick={() => router.push('/upload')}
-                className="btn-hover glass px-8 py-6 text-lg"
+                className="btn-minimal-outline"
               >
-                <Upload className="w-5 h-5 mr-2" />
-                Upload Your Data
-              </Button>
+                Read the docs
+              </button>
             </div>
           </motion.div>
         </div>
       </div>
 
       {/* Features Section */}
-      <div className="container mx-auto px-4 py-20">
+      <div className="container mx-auto px-6 py-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Explore Your Mind Like Never Before
+          <h2 className="text-3xl md:text-4xl font-medium mb-4">
+            Explore Your Conversations
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Advanced AI-powered analysis reveals hidden patterns in your ChatGPT conversations
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Advanced AI analysis reveals hidden patterns in your ChatGPT history
           </p>
         </motion.div>
 
@@ -268,22 +285,19 @@ export default function HomePage() {
             {
               icon: Network,
               title: "3D Neural Network",
-              description: "See your conversations as interconnected nodes in beautiful 3D space",
-              details: "Each conversation becomes a node, with connections showing semantic similarity. Rotate, zoom, and explore your knowledge graph intuitively.",
+              description: "Visualize conversations as interconnected nodes in 3D space",
               delay: 0.1
             },
             {
               icon: Eye,
               title: "Smart Insights",
               description: "Discover patterns and trends in your conversation history",
-              details: "AI-powered analysis reveals topic clusters, conversation evolution, and knowledge domains you explore most frequently.",
               delay: 0.2
             },
             {
-              icon: Zap,
+              icon: Sparkles,
               title: "Interactive Controls",
-              description: "Customize the visualization to focus on what matters to you",
-              details: "Adjust similarity thresholds, filter by date ranges, and customize the appearance to explore different perspectives.",
+              description: "Customize visualization to focus on what matters",
               delay: 0.3
             }
           ].map((feature, index) => (
@@ -293,21 +307,16 @@ export default function HomePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: feature.delay }}
             >
-              <Card className="h-full glass card-hover group">
+              <Card className="glass card-hover h-full">
                 <CardHeader className="text-center pb-4">
-                  <div className="mx-auto mb-4 p-3 rounded-full bg-primary/10 w-fit group-hover:bg-primary/20 transition-colors">
-                    <feature.icon className="w-8 h-8 text-primary" />
+                  <div className="mx-auto mb-4 p-3 rounded-lg bg-accent/30 w-fit">
+                    <feature.icon className="w-6 h-6" />
                   </div>
-                  <CardTitle className="text-xl">{feature.title}</CardTitle>
-                  <CardDescription className="text-base">
+                  <CardTitle className="text-lg font-medium">{feature.title}</CardTitle>
+                  <CardDescription className="text-muted-foreground">
                     {feature.description}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {feature.details}
-                  </p>
-                </CardContent>
               </Card>
             </motion.div>
           ))}
@@ -315,7 +324,7 @@ export default function HomePage() {
       </div>
 
       {/* CTA Section */}
-      <div className="container mx-auto px-4 py-20">
+      <div className="container mx-auto px-6 py-24">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -323,26 +332,22 @@ export default function HomePage() {
           className="text-center"
         >
           <Card className="glass max-w-2xl mx-auto">
-            <CardHeader>
-              <BrainCircuit className="w-12 h-12 text-primary mx-auto mb-4" />
-              <CardTitle className="text-2xl md:text-3xl">
-                Ready to Explore Your Mind?
+            <CardHeader className="py-12">
+              <BrainCircuit className="w-10 h-10 mx-auto mb-6" />
+              <CardTitle className="text-2xl md:text-3xl font-medium mb-4">
+                Ready to Explore?
               </CardTitle>
-              <CardDescription className="text-lg">
-                Upload your ChatGPT export and start your journey into the neural landscape of your conversations
+              <CardDescription className="text-lg text-muted-foreground mb-8">
+                Upload your ChatGPT export and discover the neural landscape of your conversations
               </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-0">
               <Button 
                 onClick={() => router.push('/upload')}
-                size="lg" 
-                className="btn-hover shadow-neural-lg w-full sm:w-auto px-12 py-6 text-lg"
+                className="btn-minimal"
               >
-                <Upload className="w-5 h-5 mr-2" />
-                Get Started Now
-                <ArrowRight className="w-5 h-5 ml-2" />
+                Get Started
+                <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
-            </CardContent>
+            </CardHeader>
           </Card>
         </motion.div>
       </div>
