@@ -75,7 +75,7 @@ export function InsightsDashboard({ graph }: InsightsDashboardProps) {
         >
           <div className="inline-flex items-center gap-3 px-4 py-2 rounded-lg glass">
             <BarChart3 className="w-6 h-6" />
-            <h2 className="text-2xl md:text-3xl font-medium">Neural Insights</h2>
+            <h2 className="text-2xl md:text-3xl font-medium">Insights</h2>
           </div>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Deep analysis of your conversation patterns and knowledge landscape

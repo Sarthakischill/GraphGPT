@@ -1,3 +1,4 @@
+// chat-history-visualizer/src/services/processingService.ts
 import { ChatParser } from './chatParser';
 import { EmbeddingService } from './embeddingService';
 import { GraphBuilder } from './graphBuilder';
@@ -135,8 +136,9 @@ export class ProcessingService {
         message: 'Building 3D graph structure...'
       });
 
+      // Reverted similarityThreshold to 0.7 as requested.
       const defaultControls: VisualizationControls = {
-        similarityThreshold: 0.7,
+        similarityThreshold: 0.7, //
         clusteringAlgorithm: 'similarity',
         nodeSize: 'messageCount',
         colorScheme: 'cluster',

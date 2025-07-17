@@ -136,10 +136,15 @@ select:focus-visible {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-/* Dot pattern for hero sections */
+/* Dot pattern for full page coverage */
 .dot-pattern {
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-  background-size: 20px 20px;
+  background-image: 
+    radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+    radial-gradient(circle at 20% 80%, hsl(var(--foreground) / 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, hsl(var(--foreground) / 0.01) 0%, transparent 50%);
+  background-size: 24px 24px, 100% 100%, 100% 100%;
+  background-attachment: fixed;
+  min-height: 100vh;
 }
 
 /* Minimal animations */
@@ -167,4 +172,28 @@ select:focus-visible {
 .btn-minimal-outline {
   @apply px-6 py-2.5 rounded-lg font-medium transition-all duration-200;
   @apply border border-border text-foreground hover:bg-accent/30;
+}
+
+/* Fix Radix UI Tabs - ensure proper display behavior */
+[role="tabpanel"] {
+  height: 100%;
+  width: 100%;
+}
+
+[role="tabpanel"].flex {
+  display: flex;
+}
+
+/* Force show active tab content */
+[role="tabpanel"][data-state="active"] {
+  display: block !important;
+}
+
+[role="tabpanel"][data-state="active"].flex {
+  display: flex !important;
+}
+
+/* Ensure inactive tabs are hidden */
+[role="tabpanel"][data-state="inactive"] {
+  display: none !important;
 }

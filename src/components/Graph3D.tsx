@@ -1,3 +1,4 @@
+// chat-history-visualizer/src/components/Graph3D.tsx
 "use client";
 
 import { useEffect, useRef, useState, memo } from "react";
@@ -46,7 +47,7 @@ const Graph3DComponent = ({
     loadForceGraph();
   }, []);
 
-  // Initialize graph with retry logic and WebGL detection
+  // Initialize graph with retry logic and WebGL detection, and set initial data
   useEffect(() => {
     if (!ForceGraph3D || graphRef.current) return;
 
@@ -110,7 +111,7 @@ const Graph3DComponent = ({
           Object.getOwnPropertyNames(graphInstance)
         );
 
-        // Configure the graph
+        // Configure the graph with minimal settings to prevent errors
         graphInstance
           .backgroundColor("rgba(0,0,0,0)")
           .showNavInfo(false)
@@ -121,68 +122,106 @@ const Graph3DComponent = ({
         graphRef.current = graphInstance;
         console.log("Graph3D: Graph configured successfully");
 
-        // Immediately check what's in the container
-        console.log("Graph3D: Container after creation:", {
-          children: container.children.length,
-          innerHTML: container.innerHTML.substring(0, 200),
-          hasCanvas: !!container.querySelector("canvas"),
-        });
-
-        // Try to force render immediately
-        if (graphInstance.refresh) {
-          console.log("Graph3D: Calling refresh()");
-          graphInstance.refresh();
-        }
-
-        // Check again after a delay
-        setTimeout(() => {
-          const canvas = container.querySelector("canvas");
-          console.log("Canvas check after delay:", {
-            canvasFound: !!canvas,
-            canvasWidth: canvas?.width,
-            canvasHeight: canvas?.height,
-            containerChildren: container.children.length,
-            containerHTML: container.innerHTML.substring(0, 200),
+        // Set initial graph data immediately after initialization
+        if (graph && graph.nodes && graph.nodes.length > 0) {
+          const initialGraphData = {
+            nodes: graph.nodes.map((node) => ({
+              id: node.id,
+              name: node.conversation.title,
+              val: node.size || 5,
+              color: node.color || "#4299e1",
+              conversation: node.conversation,
+            })),
+            links: controls.showEdges
+              ? graph.edges.map((edge) => ({
+                  source: edge.source,
+                  target: edge.target,
+                  value: edge.weight || 1,
+                }))
+              : [],
+          };
+          console.log("Graph3D: Setting initial graph data", {
+            nodeCount: initialGraphData.nodes.length,
+            linkCount: initialGraphData.links.length,
           });
+          graphInstance.graphData(initialGraphData);
 
-          // Try different methods to force rendering
-          if (!canvas && graphRef.current) {
-            console.log("No canvas found, trying different approaches");
+          // Configure node and link properties immediately
+          graphInstance
+            .nodeLabel(
+              (node: any) =>
+                `<div class="p-2 rounded-md bg-gray-900 text-white border border-gray-700">${
+                  node.name
+                }<br/><span class="text-xs text-gray-400">${
+                  node.conversation?.metadata?.messageCount || 0
+                } messages</span></div>`
+            )
+            .nodeColor((node: any) => node.color)
+            .nodeVal((node: any) => node.val)
+            .linkWidth((edge: any) =>
+              Math.max(edge.value * controls.edgeThickness, 1)
+            )
+            .linkColor(() => "rgba(0, 255, 136, 0.6)")
+            .linkOpacity(0.8)
+            .nodeThreeObject((node: any) => {
+              const nodeData = node;
+              const group = new THREE.Group();
 
-            // Try setting some test data to trigger rendering
-            const testData = {
-              nodes: [{ id: "test", name: "Test", val: 10, color: "#ff0000" }],
-              links: [],
-            };
+              // Create the sphere
+              const geometry = new THREE.SphereGeometry(
+                nodeData.val || 5,
+                16,
+                8
+              );
+              const material = new THREE.MeshLambertMaterial({
+                color: nodeData.color,
+                transparent: true,
+                opacity: 0.85,
+              });
+              const sphere = new THREE.Mesh(geometry, material);
+              group.add(sphere);
 
-            console.log("Setting test data to trigger rendering");
-            graphRef.current.graphData(testData);
+              // Create the text sprite
+              const title = nodeData.name || "Untitled";
+              const canvas = document.createElement("canvas");
+              const context = canvas.getContext("2d");
+              if (context) {
+                const fontSize = 14;
+                context.font = `400 ${fontSize}px 'Inter', sans-serif`;
 
-            // Try accessing the renderer directly
-            console.log("Checking renderer:", {
-              hasRenderer: !!graphRef.current.renderer,
-              hasScene: !!graphRef.current.scene,
-              hasCamera: !!graphRef.current.camera,
-            });
+                const textWidth = context.measureText(title).width;
+                const canvasWidth = Math.max(textWidth + 16, 40);
+                const canvasHeight = fontSize + 8;
 
-            // Try to get the renderer's DOM element
-            if (graphRef.current.renderer && graphRef.current.renderer()) {
-              const renderer = graphRef.current.renderer();
-              console.log("Renderer found:", renderer);
-              if (renderer.domElement) {
-                console.log("Renderer DOM element found:", renderer.domElement);
-                container.appendChild(renderer.domElement);
-                console.log("Manually appended renderer DOM element");
+                canvas.width = canvasWidth;
+                canvas.height = canvasHeight;
+
+                // Draw bright green text
+                context.font = `400 ${fontSize}px 'Inter', sans-serif`;
+                context.fillStyle = "#00ff88";
+                context.textAlign = "center";
+                context.textBaseline = "middle";
+                context.fillText(title, canvasWidth / 2, canvasHeight / 2);
+
+                const texture = new THREE.CanvasTexture(canvas);
+                texture.needsUpdate = true;
+                const spriteMaterial = new THREE.SpriteMaterial({
+                  map: texture,
+                  transparent: true,
+                  alphaTest: 0.1,
+                });
+                const sprite = new THREE.Sprite(spriteMaterial);
+
+                const aspectRatio = canvasWidth / canvasHeight;
+                sprite.scale.set(10 * aspectRatio, 10, 1);
+                sprite.position.y = (nodeData.val || 5) + 8;
+
+                group.add(sprite);
               }
-            }
 
-            // Try other methods
-            if (graphRef.current.refresh) graphRef.current.refresh();
-            if (graphRef.current.resumeAnimation)
-              graphRef.current.resumeAnimation();
-            if (graphRef.current.zoomToFit) graphRef.current.zoomToFit(1000);
-          }
-        }, 500);
+              return group;
+            });
+        }
 
         const handleResize = () => {
           if (containerRef.current && graphRef.current) {
@@ -217,16 +256,21 @@ const Graph3DComponent = ({
     return () => {
       window.removeEventListener("resize", () => {});
     };
-  }, [ForceGraph3D, onNodeClick]);
+  }, [ForceGraph3D, onNodeClick, graph, controls.showEdges]); // Added graph and controls.showEdges as dependencies for initial data setup
 
-  // Update graph data when it changes
+  // Update graph data when graph prop changes - SIMPLIFIED VERSION
   useEffect(() => {
-    if (graphRef.current) {
+    if (graphRef.current && graph && graph.nodes && graph.nodes.length > 0) {
+      console.log("Graph3D: Updating graph data", {
+        nodeCount: graph.nodes.length,
+        edgeCount: graph.edges.length,
+      });
+
       const graphData = {
         nodes: graph.nodes.map((node) => ({
           id: node.id,
           name: node.conversation.title,
-          val: node.size || 5, // Ensure nodes have a size
+          val: node.size || 5,
           color: node.color || "#4299e1",
           conversation: node.conversation,
         })),
@@ -239,128 +283,122 @@ const Graph3DComponent = ({
           : [],
       };
 
-      console.log("Graph3D: Setting graph data", {
-        nodeCount: graphData.nodes.length,
-        linkCount: graphData.links.length,
-        sampleNode: graphData.nodes[0],
-        containerDimensions: containerRef.current
-          ? {
-              width: containerRef.current.clientWidth,
-              height: containerRef.current.clientHeight,
+      try {
+        // Simply set the graph data without complex simulation management
+        graphRef.current.graphData(graphData);
+        
+        // Update node colors for selection
+        graphRef.current.nodeColor((node: any) =>
+          node.id === selectedNodeId ? "#FFD700" : node.color
+        );
+
+        // Center the graph after a short delay
+        setTimeout(() => {
+          if (graphRef.current) {
+            try {
+              graphRef.current.zoomToFit(400, 30);
+            } catch (zoomError) {
+              console.warn("Graph3D: Error zooming to fit:", zoomError);
             }
-          : null,
-      });
+          }
+        }, 500);
+      } catch (error) {
+        console.error("Graph3D: Error updating graph data", error);
+      }
+    }
+  }, [graph, controls.showEdges, selectedNodeId]);
 
-      // Set the graph data
-      graphRef.current.graphData(graphData);
+  // Update selected node highlighting - SIMPLIFIED
+  useEffect(() => {
+    if (graphRef.current && selectedNodeId) {
+      try {
+        graphRef.current.nodeColor((node: any) =>
+          node.id === selectedNodeId ? "#FFD700" : node.color
+        );
+      } catch (error) {
+        console.error("Graph3D: Error updating selected node", error);
+      }
+    }
+  }, [selectedNodeId]);
 
-      // Additional configuration to ensure visibility
-      graphRef.current
-        .nodeAutoColorBy("color")
-        .enableNodeDrag(true)
-        .enableNavigationControls(true);
+  // Handle tab visibility changes and container resize
+  useEffect(() => {
+    if (graphRef.current && graph && graph.nodes.length > 0) {
+      const handleResize = () => {
+        if (containerRef.current && graphRef.current) {
+          const container = containerRef.current;
+          const newWidth = Math.max(
+            container.clientWidth,
+            container.offsetWidth,
+            800
+          );
+          const newHeight = Math.max(
+            container.clientHeight,
+            container.offsetHeight,
+            600
+          );
 
-      // Apply aggressive centering with multiple attempts for reliability
-      const centerGraph = () => {
-        if (graphRef.current) {
-          console.log("Graph3D: Centering graph with zoomToFit");
-          graphRef.current.zoomToFit(400, 30);
+          console.log("Graph3D: Resizing graph", { newWidth, newHeight });
+          graphRef.current.width(newWidth).height(newHeight);
+
+          // Re-center the graph after resize
+          setTimeout(() => {
+            if (graphRef.current) {
+              graphRef.current.zoomToFit(400, 30);
+            }
+          }, 100);
         }
       };
 
-      // Multiple centering attempts to ensure it works on initial load
-      setTimeout(centerGraph, 50);   // Very quick
-      setTimeout(centerGraph, 200);  // Quick
-      setTimeout(centerGraph, 500);  // Medium
-      setTimeout(centerGraph, 1000); // Fallback
-      setTimeout(centerGraph, 2000); // Final fallback
+      // Initial setup
+      handleResize();
 
-      console.log("Graph3D: Applied graph data and scheduled aggressive centering");
+      // Set up resize observer for container changes
+      const resizeObserver = new ResizeObserver(handleResize);
+      if (containerRef.current) {
+        resizeObserver.observe(containerRef.current);
+      }
+
+      // Set up window resize listener
+      window.addEventListener("resize", handleResize);
+
+      return () => {
+        resizeObserver.disconnect();
+        window.removeEventListener("resize", handleResize);
+      };
     }
-  }, [graph, controls.showEdges]);
+  }, [graph]);
 
-  // Update other properties when controls change
+  // Handle tab visibility changes
   useEffect(() => {
-    if (graphRef.current) {
-      graphRef.current
-        .nodeLabel(
-          (node: any) =>
-            `<div class="p-2 rounded-md bg-gray-900 text-white border border-gray-700">${
-              node.name
-            }<br/><span class="text-xs text-gray-400">${
-              node.conversation?.metadata?.messageCount || 0
-            } messages</span></div>`
-        )
-        .nodeColor((node: any) =>
-          node.id === selectedNodeId ? "#FFD700" : node.color
-        )
-        .nodeVal((node: any) => node.val)
-        .linkWidth((edge: any) =>
-          Math.max(edge.value * controls.edgeThickness, 1)
-        ) // Ensure minimum width
-        .linkColor(() => "rgba(0, 255, 136, 0.6)") // Green connections like in reference
-        .linkOpacity(0.8) // More visible
-        // Create combined sphere + text nodes using Three.js Groups
-        .nodeThreeObject((node: any) => {
-          const nodeData = node;
-          const group = new THREE.Group();
+    const handleVisibilityChange = () => {
+      if (!document.hidden && graphRef.current && containerRef.current) {
+        // Tab became visible, refresh the graph
+        setTimeout(() => {
+          if (graphRef.current && containerRef.current) {
+            const container = containerRef.current;
+            const newWidth = Math.max(
+              container.clientWidth,
+              container.offsetWidth,
+              800
+            );
+            const newHeight = Math.max(
+              container.clientHeight,
+              container.offsetHeight,
+              600
+            );
 
-          // 1. CREATE THE SPHERE (THE NODE ITSELF)
-          const geometry = new THREE.SphereGeometry(nodeData.val || 5, 16, 8);
-          const material = new THREE.MeshLambertMaterial({
-            color: nodeData.color,
-            transparent: true,
-            opacity: 0.85,
-          });
-          const sphere = new THREE.Mesh(geometry, material);
-          group.add(sphere);
-
-          // 2. CREATE THE GREEN TEXT SPRITE (like in the reference image)
-          const title = nodeData.name || "Untitled";
-          const canvas = document.createElement("canvas");
-          const context = canvas.getContext("2d");
-          if (context) {
-            const fontSize = 12; // Clean, readable size
-            context.font = `400 ${fontSize}px 'Montserrat', sans-serif`; // Regular weight
-
-            const textWidth = context.measureText(title).width;
-            const canvasWidth = Math.max(textWidth + 12, 30); // Minimal padding
-            const canvasHeight = fontSize + 6;
-
-            canvas.width = canvasWidth;
-            canvas.height = canvasHeight;
-
-            // Draw sharp green text (no background, clean and bright)
-            context.font = `400 ${fontSize}px 'Montserrat', sans-serif`;
-            context.fillStyle = "#00ff88"; // Bright green
-            context.textAlign = "center";
-            context.textBaseline = "middle";
-            context.fillText(title, canvasWidth / 2, canvasHeight / 2);
-
-            const texture = new THREE.CanvasTexture(canvas);
-            texture.needsUpdate = true;
-            const spriteMaterial = new THREE.SpriteMaterial({
-              map: texture,
-              transparent: true,
-              alphaTest: 0.1,
-            });
-            const sprite = new THREE.Sprite(spriteMaterial);
-
-            // Scale and position the sprite
-            const aspectRatio = canvasWidth / canvasHeight;
-            sprite.scale.set(8 * aspectRatio, 8, 1); // Smaller scale
-            sprite.position.y = (nodeData.val || 5) + 6; // Position above the sphere
-
-            group.add(sprite);
+            graphRef.current.width(newWidth).height(newHeight);
+            graphRef.current.zoomToFit(400, 30);
           }
+        }, 200);
+      }
+    };
 
-          return group;
-        });
-
-      // Re-heat simulation to apply new color to selected node
-      graphRef.current.d3ReheatSimulation();
-    }
-  }, [controls, selectedNodeId]);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+  }, []);
 
   if (isLoading) {
     return (
@@ -457,13 +495,16 @@ const Graph3DComponent = ({
           onClick={() => {
             if (graphRef.current) {
               console.log("Focus button clicked - centering graph");
-              graphRef.current.zoomToFit(800, 50);
+              // Multiple attempts to ensure proper focusing
+              graphRef.current.zoomToFit(400, 20);
+              setTimeout(() => graphRef.current.zoomToFit(400, 20), 100);
+              setTimeout(() => graphRef.current.zoomToFit(400, 20), 500);
             }
           }}
-          className="px-3 py-2 bg-primary/80 hover:bg-primary text-primary-foreground text-sm rounded-md backdrop-blur-sm border border-primary/20 transition-colors"
+          className="px-4 py-2 bg-blue-600/90 hover:bg-blue-600 text-white text-sm rounded-md backdrop-blur-sm border border-blue-500/30 transition-colors shadow-lg"
           title="Center and focus the graph"
         >
-          🎯 Focus
+          🎯 Focus Graph
         </button>
       </div>
     </div>
