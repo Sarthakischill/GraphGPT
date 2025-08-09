@@ -49,13 +49,6 @@ export const GraphDataProvider = ({ children }: { children: ReactNode }) => {
         isDemoFile
       );
       
-      console.log('GraphDataContext: Processing complete', {
-        nodeCount: resultGraph?.nodes?.length || 0,
-        edgeCount: resultGraph?.edges?.length || 0,
-        clusterCount: resultGraph?.clusters?.length || 0,
-        conversationCount: rawData?.conversations?.length || 0
-      });
-            
       setGraph(resultGraph);
       setConversations(rawData.conversations);
       setEmbeddings(rawData.embeddings);
@@ -65,7 +58,6 @@ export const GraphDataProvider = ({ children }: { children: ReactNode }) => {
       return true;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred during processing.';
-      console.error('GraphDataContext: Processing failed', err);
       setError(errorMessage);
       setIsLoading(false);
       return false;

@@ -14,7 +14,7 @@ const eslintConfig = [
   {
     rules: {
       // Disable problematic TypeScript rules for 3D graph library integration
-      "@typescript-eslint/no-explicit-any": "off",
+      "@typescript-eslint/no-explicit-any": "error",
       
       // Disable React hooks exhaustive deps warnings for complex dependencies
       "react-hooks/exhaustive-deps": "warn",

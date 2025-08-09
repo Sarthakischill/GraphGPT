@@ -31,8 +31,7 @@ export class EmbeddingService {
         if (i < batches.length - 1) {
           await this.delay(this.RATE_LIMIT_DELAY);
         }
-      } catch (error) {
-        console.error(`Failed to process batch ${i + 1}:`, error);
+      } catch {
         // Continue with next batch instead of failing completely
         continue;
       }
@@ -67,10 +66,8 @@ export class EmbeddingService {
           });
         }
       } catch (error) {
-        console.error(`Failed to generate embedding for conversation ${conversation.id}:`, error);
         // Log the specific error for debugging
         if (error instanceof Error) {
-          console.error(`Error details: ${error.message}`);
         }
         continue;
       }
@@ -98,7 +95,6 @@ export class EmbeddingService {
         
         // Exponential backoff with jitter
         const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000;
-        console.log(`Attempt ${attempt + 1} failed, retrying in ${delay}ms...`);
         await this.delay(delay);
       }
     }

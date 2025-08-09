@@ -10,18 +10,9 @@ export default function DashboardPage() {
   const { graph, isLoading } = useContext(GraphDataContext);
   const router = useRouter();
 
-  // Debug: Log what we receive in dashboard
-  console.log('DashboardPage: Context state', {
-    hasGraph: !!graph,
-    isLoading,
-    nodeCount: graph?.nodes?.length || 0,
-    edgeCount: graph?.edges?.length || 0
-  });
-
   useEffect(() => {
     // If there's no graph data and we're not loading, redirect to home
     if (!isLoading && !graph) {
-      console.log('DashboardPage: No graph data, redirecting to home');
       router.replace('/');
     }
   }, [graph, isLoading, router]);

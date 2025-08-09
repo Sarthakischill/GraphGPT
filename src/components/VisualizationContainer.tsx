@@ -7,6 +7,7 @@ import { ControlPanel } from "@/components/ControlPanel";
 import { Graph3D } from "@/components/Graph3D";
 import { ConversationDetail } from "@/components/ConversationDetail";
 import { InsightsDashboard } from "@/components/InsightsDashboard";
+import { ExplorerView } from "@/components/ExplorerView";
 import { Settings, BarChart3, AppWindow, BrainCircuit } from "lucide-react";
 import { Button } from "./ui/button";
 import {
@@ -17,20 +18,20 @@ import {
   SheetTrigger,
 } from "./ui/sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import { Badge } from "./ui/badge";
 import { GraphDataContext } from "@/context/GraphDataContext";
 import { motion } from "motion/react";
 
 interface VisualizationContainerProps {
+  /** The initial conversation graph data. */
   initialGraph: ConversationGraph;
 }
 
+/**
+ * The main container for the visualization page.
+ * It manages the state of the graph, controls, and tabs.
+ * @param {VisualizationContainerProps} props The component props.
+ * @returns {JSX.Element} The rendered component.
+ */
 export function VisualizationContainer({
   initialGraph,
 }: VisualizationContainerProps) {
@@ -52,6 +53,11 @@ export function VisualizationContainer({
     ? graph.nodes.find((node) => node.id === selectedNodeId)
     : null;
 
+  /**
+   * Handles changes to the visualization controls.
+   * Rebuilds the graph with the new controls and updates the state.
+   * @param {VisualizationControls} newControls The new visualization controls.
+   */
   const handleControlsChange = useCallback(async (newControls: VisualizationControls) => {
     setControls(newControls);
     const rebuiltGraph = await rebuildGraphWithControls(newControls);
@@ -59,10 +65,6 @@ export function VisualizationContainer({
       setGraph(rebuiltGraph);
     }
   }, [rebuildGraphWithControls]);
-
-  useEffect(() => {
-    handleControlsChange(controls);
-  }, [controls, handleControlsChange]);
 
   // Close conversation details when switching tabs
   useEffect(() => {
@@ -136,6 +138,7 @@ export function VisualizationContainer({
               </div>
             )}
 
+            {/* Controls Sheet */}
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="outline" className="btn-hover glass">
@@ -164,17 +167,15 @@ export function VisualizationContainer({
 
         {/* Main Content Area */}
         <div className="flex-1 overflow-hidden">
-          {/* Neural Map Tab - with side panel */}
+          {/* Neural Map Tab */}
           <TabsContent
             value="graph"
             className="h-full w-full flex"
-            style={{ height: "100%" }}
           >
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               className="w-full h-full relative flex-1"
-              style={{ height: "100%" }}
             >
               {graph && graph.nodes && graph.nodes.length > 0 ? (
                 <Graph3D
@@ -202,7 +203,7 @@ export function VisualizationContainer({
               )}
             </motion.div>
 
-            {/* Right Panel - Conversation Detail - Only show in graph tab */}
+            {/* Right Panel for Conversation Details */}
             {selectedNode && activeTab === "graph" && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
@@ -218,7 +219,7 @@ export function VisualizationContainer({
             )}
           </TabsContent>
 
-          {/* Insights Tab - full width */}
+          {/* Insights Tab */}
           <TabsContent
             value="insights"
             className="h-full w-full overflow-y-auto"
@@ -228,101 +229,16 @@ export function VisualizationContainer({
             </div>
           </TabsContent>
 
-          {/* Explorer Tab - with side-by-side layout */}
+          {/* Explorer Tab */}
           <TabsContent
             value="conversations"
-            className="h-full w-full flex"
-            style={{ height: "100%" }}
+            className="h-full w-full"
           >
-            {/* Left Panel - Conversation List */}
-            <div className="flex-1 overflow-y-auto p-6">
-              <div className="mb-6">
-                <h2 className="text-xl font-medium mb-2">
-                  Conversation Explorer
-                </h2>
-                <p className="text-muted-foreground">
-                  Browse and explore all your conversations
-                </p>
-              </div>
-
-              <div className="grid gap-4">
-                {graph.nodes.map((node) => (
-                  <div key={node.id}>
-                    <Card
-                      className={`cursor-pointer card-hover glass transition-all ${
-                        selectedNodeId === node.id
-                          ? "ring-2 ring-primary/50 bg-primary/5"
-                          : ""
-                      }`}
-                      onClick={() => {
-                        setSelectedNodeId(node.id);
-                        // Stay in Explorer tab - don't switch tabs
-                      }}
-                    >
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <CardTitle className="text-base font-medium line-clamp-2">
-                              {node.conversation.title}
-                            </CardTitle>
-                            <div className="flex items-center gap-4 mt-2 text-muted-foreground text-sm">
-                              <span>
-                                {node.conversation.messages.length} messages
-                              </span>
-                              <span>
-                                {node.conversation.metadata.wordCount} words
-                              </span>
-                              <Badge variant="secondary" className="glass">
-                                {node.conversation.metadata.sentiment}
-                              </Badge>
-                            </div>
-                          </div>
-                          <div
-                            className="w-3 h-3 rounded-full flex-shrink-0 mt-1"
-                            style={{ backgroundColor: node.color }}
-                          />
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-muted-foreground line-clamp-2">
-                          {node.conversation.summary}
-                        </p>
-                        {node.conversation.metadata.topics.length > 0 && (
-                          <div className="flex flex-wrap gap-2 mt-3">
-                            {node.conversation.metadata.topics
-                              .slice(0, 3)
-                              .map((topic) => (
-                                <Badge
-                                  key={topic}
-                                  variant="outline"
-                                  className="text-xs"
-                                >
-                                  {topic}
-                                </Badge>
-                              ))}
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right Panel - Conversation Detail (only in Explorer tab) */}
-            {selectedNode && activeTab === "conversations" && (
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                className="w-96 border-l border-border/50 flex-shrink-0"
-              >
-                <ConversationDetail
-                  conversation={selectedNode.conversation}
-                  onClose={() => setSelectedNodeId(null)}
-                />
-              </motion.div>
-            )}
+            <ExplorerView
+              graph={graph}
+              selectedNodeId={selectedNodeId}
+              onNodeSelect={setSelectedNodeId}
+            />
           </TabsContent>
         </div>
       </Tabs>

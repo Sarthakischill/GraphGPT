@@ -20,8 +20,6 @@ export default function HomePage() {
   };
 
   const handleTryDemo = async () => {
-    console.log('Demo button clicked');
-    
     const demoData = [
       {
         id: "demo-1",
@@ -215,13 +213,10 @@ export default function HomePage() {
       }
     ];
 
-    console.log('Creating demo file with data:', demoData);
     const testBlob = new Blob([JSON.stringify(demoData)], { type: 'application/json' });
     const testFile = new File([testBlob], "demo-conversations.json", { type: "application/json" });
     
-    console.log('Calling handleFileSelect with demo file');
-    const success = await handleFileSelect(testFile);
-    console.log('Demo processing result:', success);
+    await handleFileSelect(testFile);
   };
 
   if (isLoading) {
