@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Montserrat } from "next/font/google";
 import "./globals.css";
 import { GraphDataProvider } from "@/context/GraphDataContext";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,6 +29,7 @@ export default function RootLayout({
       <body className={`${inter.className} ${montserrat.className} antialiased font-sans`}>
         <GraphDataProvider>
           {children}
+          <Analytics />
         </GraphDataProvider>
       </body>
     </html>
